@@ -9,7 +9,7 @@ gem 'sqlite3'
 group :development, :test do
   gem 'rspec-rails'
   gem 'guard-rspec', '2.5.0'
-  gem 'guard-spork', '1.5.0'
+  #gem 'guard-spork', '1.5.0'
 end
 
 group :test do
