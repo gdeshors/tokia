@@ -12,8 +12,8 @@ describe "UserPages" do
       visit users_path
     end
 
-    it { should have_title('All users') }
-    it { should have_content('All users') }
+    it { should have_title('Les concurrents') }
+    it { should have_content('Liste des concurrents') }
 
     describe "pagination" do
 

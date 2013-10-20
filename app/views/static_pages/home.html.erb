@@ -5,7 +5,10 @@
   Application pour faire combattre des IA de Tok
  </h2>
 
-  <%= link_to "Créer un compte", signup_path, class: "btn btn-large btn-primary" %>
+  <% unless signed_in? %>
+    <%= link_to "Créer un compte", signup_path, class: "btn btn-large btn-primary" %>
+  <% end %>
 </div>
 
 <%= link_to image_tag("rails.png", alt: "Rails"), 'http://rubyonrails.org/' %>
+
