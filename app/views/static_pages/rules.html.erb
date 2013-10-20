@@ -1,9 +1,1001 @@
   <% provide(:title, 'Règles') %>
 <h1>Les règles</h1>
+<p>Version 1.3</p>
 
-<p>
 
-Contenu des règles
 
-</p>
+
+<P  ><BR>
+</P>
+<h2 >1 Introduction</h2>
+<P >Ce document décrit les règles d'un concours visant
+à opposer des programmes capables de jouer au tok, en communiquant
+avec un programme qui joue le rôle du plateau. Ce plateau joue aussi
+le rôle d'arbitre, distribue les cartes et fournit à chaque joueur
+toutes les informations qu'il doit recevoir sur le jeu et les actions
+des autres joueurs.</P>
+<P >Les participants au concours sont invités à
+développer un client (une IA), le serveur sera fourni et pourra être
+exécuté par les participants lors du développement.</P>
+<P >Les parties opposeront deux instances d'un
+participant contre deux instances d'un autre participant. Il est
+interdit de tenter de faire communiquer par quelque moyen que ce soit
+les deux instances qui seront partenaires, autrement qu'en passant
+par le serveur comme prévu dans les échanges.</P>
+<P >Afin de limiter la part de hasard, les matches
+feront intervenir plusieurs parties d'affilée&nbsp;; par ailleurs on
+peut réfléchir à réduire le hasard en distribuant le même set de
+cartes aux deux équipes ou par d'autres moyens. Ces aspects ne sont
+pas fixés.</P>
+<P >Les résultats seront évalués par compte de
+parties gagnées, ou de façon plus évoluée par un classement ELO
+(utilisé pour les joueurs d'échecs par exemple)&nbsp;; c'est aussi
+à déterminer.</P>
+<h2 ><BR><BR>
+</h2>
+<h2 >2 Règles
+du tok utilisées</h2>
+<h3 >Joueurs</h3>
+<P >La partie oppose deux équipes de deux joueurs,
+disposés face à face. Les joueurs sont appelés A, B, C, D. A et C
+sont donc contre B et D.</P>
+<h3 >Plateau</h3>
+<P >Le plateau fait 4 fois 18 cases, avec 4 places dans
+l'écurie (le départ) et 4 cases de sortie pour chaque joueur, plus
+une case au milieu.</P>
+<P >Les cases sont notées A0 à A17, B0 à B17 etc. Les
+cases de sortie sont A18 à A21, B18 à B21 etc.. La case du milieu
+est notée M.</P>
+<P >
+
+<%= image_tag("plateau.gif", alt: "Plateau") %>
+</P>
+<h3 >Partie</h3>
+<P >Le but est de finir les 8 pions de son équipe avant
+l'équipe adverse. Lorsqu'un joueur a fini ses quatre pions il est
+autorisé à déplacer les pions de son partenaire.</P>
+<P >La partie est composée de <I>paquets</I><SPAN >
+qui seront intégralement distribués sous la formes de </SPAN><I>mains</I><SPAN >
+de respectivement 5, 4, et 4 cartes. Les joueurs sont notifiés d'une
+nouvelle main et d'un nouveau paquet (correspondant au rassemblement
+et mélange des cartes).</SPAN></P>
+<h3 >Cartes</h3>
+<P >Les règles sont celles du tok classique, dans la
+variante suivante&nbsp;:</P>
+<UL>
+	<LI><P >L'as est un parteu ou un un (pas 11).</P>
+	<LI><P >Le roi est un parteu, fait 13 cases et mange
+	tout sur son passage.</P>
+	<LI><P >Le valet fait échange ou 11 cases. On peut
+	échanger un pion qui est au milieu.</P>
+	<LI><P >Le sept ne mange pas mais est divisible entre
+	ses propres pions. Il ne permet pas de terminer son dernier pion et
+	finir sur les pions de son partenaire.</P>
+	<LI><P >Le cinq se joue sur un adversaire.</P>
+	<LI><P >Le quatre se joue sur soi et vers l'arrière.</P>
+	<LI><P >Le deux permet comme les parteus d'aller à la
+	case du milieu si on est placé sur une case sept. On peut en sortir
+	avec un deux ou un parteu pour aller sur n'importe quelle case sept.</P>
+</UL>
+<P >Lorsqu'un joueur pose une carte qui ne lui offre
+aucune possibilité de jeu, il est forcé de jeter toutes ses cartes.
+Il ne joue donc plus la main (jusqu'à la prochaine donne).</P>
+<h2 >3 Architecture technique</h2>
+<P >Le serveur se charge de démarrer les quatre
+instances correspondant aux joueurs. Il indique à chaque joueur quel
+est son nom (A à D).</P>
+<P >Le serveur communique avec chaque joueur via un
+socket TCP bidirectionnel.  son entrée standard et écoute ses
+réponses sur sa sortie standard. Il ouvre un socket pour chaque
+client et lui fournit le numéro du port associé. Le client au
+démarrage doit se connecter à ce socket et utiliser les flux de
+sortie et d'entrée pour parler au serveur et écouter ses
+instructions ou réponses.</P>
+<P >Le client n'est pas censé 'parler' en dehors des
+moments où c'est son tour, et ne doit émettre que des ordres
+connus. Tout manquement entraîne une disqualification et la fin de
+la partie par forfait.</P>
+<P >Un ordre de mouvement invalide entraîne la défaite
+immédiate.</P>
+<P >Lorsque c'est le tour d'un joueur de parler, il
+dispose d'un délai de réponse maximum. Une absence de réponse dans
+ce délai entraîne la défaite. Le délai pourra être réglable&nbsp;;
+en première approche on envisagera cinq secondes.</P>
+<P >Le concours n'impose aucune règle sur les langages
+de programmation à utiliser pour faire les clients et les
+participants sont invités à être inventifs et à profiter de
+l'occasion pour découvrir un nouveau langage... Le code généré
+doit être multiplateforme. Le concours se déroulera
+préférentiellement sur un OS linux.</P>
+<P >La ligne de commande de lancement du client doit
+prendre comme dernier paramètre le numéro du port sur lequel le
+serveur aura ouvert le socket. Le client se connectera au serveur sur
+«&nbsp;localhost&nbsp;» avec le port fourni.</P>
+<h2 >4 Aide au développement de l'IA</h2>
+<P >Afin de faciliter le développement et notamment
+éviter le développement de l'ensemble des règles complexes du tok,
+le serveur prévoit deux fonctionnalités d'aide&nbsp;:</P>
+<UL>
+	<LI><P >description du plateau sur demande, permettant
+	au joueur de connaître l'état exhaustif du plateau, avec la liste
+	des pions de chaque joueur et le nombre de pions terminés.</P>
+	<LI><P >description de la liste des actions possibles
+	avec une carte donnée ou avec l'ensemble de ses cartes</P>
+</UL>
+<P >Ces demandes sont autorisées seulement lors du tour
+du joueur et se déroulent dans son temps imparti. Le joueur peut
+donc demander la liste des actions possibles et se baser sur cette
+liste pour choisir l'action à jouer.</P>
+<h2 >5 Description des échanges</h2>
+<h3 ><I><B>Spécification des messages</B></I></h3>
+<P  ><BR>
+</P>
+<P  ><B>Syntaxe&nbsp;:
+</B>
+</P>
+<P  ><BR>
+</P>
+<P 
+En italique&nbsp;: Définition d'un groupe de commandes, sinon la
+commande elle-même.</P>
+<P 
+La virgule sépare les commandes successives, qui seront séparées
+par un retour chariot (\n).</P>
+<P 
+X&nbsp;: X est obligatoire, une seule fois</P>
+<P 
+X+&nbsp;: au moins un X</P>
+<P 
+X*&nbsp;: zéro à n X</P>
+<P 
+X?&nbsp;: zéro ou un X</P>
+<P 
+(X | Y)&nbsp;: X ou Y (ou exclusif)</P>
+<P 
+1-5&nbsp;: 1 à 5</P>
+<P 
+<BR>
+</P>
+<P 
+<BR>
+</P>
+<P  ><B>Côté
+serveur</B></P>
+<P  ><BR>
+</P>
+<P  ><I>Partie</I>
+= BIENVENUE <SPAN STYLE="font-style: normal">(A-D)</SPAN>, <I>Paquet+,
+</I><SPAN STYLE="font-style: normal">(VICTOIRE | DEFAITE)</SPAN></P>
+<P  ><BR>
+</P>
+<P  ><I>Paquet</I>
+=  NOUVEAU_PAQUET, <I>Main, Main, Main</I></P>
+<P  ><BR>
+</P>
+<P  ><I>Main</I><SPAN STYLE="font-style: normal">
+= NOUVELLE_MAIN, </SPAN><I>Pioche</I><SPAN STYLE="font-style: normal">+,
+FIN, </SPAN><I>Pioche</I><SPAN STYLE="font-style: normal">, </SPAN><I>Tour</I><SPAN STYLE="font-style: normal">+</SPAN></P>
+<P  ><BR>
+</P>
+<P  ><I>Tour</I><SPAN STYLE="font-style: normal">
+= (</SPAN><I>Joueur</I><SPAN STYLE="font-style: normal">, </SPAN><I>Pioche*</I><SPAN STYLE="font-style: normal">)+</SPAN></P>
+<P  ><BR>
+</P>
+<P  ><I>Pioche</I><SPAN STYLE="font-style: normal">
+= PIOCHE </SPAN><I>Carte</I></P>
+<P  ><BR>
+</P>
+<P  ><I>Joueur</I><SPAN STYLE="font-style: normal">
+= JOUEUR (A-D)</SPAN></P>
+<P  ><BR>
+</P>
+<P  ><I>Carte</I><SPAN STYLE="font-style: normal">
+= (1-10 | V | D | R | J)</SPAN></P>
+<P  ><BR>
+</P>
+<P  ><B>Côté
+client</B></P>
+<P  ><BR>
+</P>
+<P  ><I>Identification</I>
+= IDENTIFICATION &lt;nom du programme et version&gt;</P>
+<P  ><BR>
+</P>
+<P  ><I>Tour</I><SPAN STYLE="font-style: normal">
+= (</SPAN><I>Pose</I><SPAN STYLE="font-style: normal">, </SPAN><I>Action</I><SPAN STYLE="font-style: normal">+)+,
+FIN</SPAN></P>
+<P  ><BR>
+</P>
+<P  ><I>Pose</I><SPAN STYLE="font-style: normal">
+= CARTE </SPAN><I>Carte</I></P>
+<P  ><BR>
+</P>
+<P  ><I>Action </I><SPAN STYLE="font-style: normal">=
+(SORT | JETTE | </SPAN><I>Deplace</I><SPAN STYLE="font-style: normal">
+| </SPAN><I>Echange</I><SPAN STYLE="font-style: normal">), </SPAN><I>Mange</I><SPAN STYLE="font-style: normal">*,
+</SPAN><I>Termine</I><SPAN STYLE="font-style: normal">?</SPAN></P>
+<P  ><BR>
+</P>
+<P  ><I>Deplace </I><SPAN STYLE="font-style: normal">=
+DEPLACE </SPAN><I>Case-Case</I></P>
+<P  ><BR>
+</P>
+<P  ><I>Echange </I><SPAN STYLE="font-style: normal">=
+ECHANGE </SPAN><I>Case-Case</I></P>
+<P  ><BR>
+</P>
+<P  ><I>Case </I><SPAN STYLE="font-style: normal">=
+((A-D)(0-21))|M</SPAN></P>
+<P  ><BR>
+</P>
+<P  ><I>Mange =
+</I><SPAN STYLE="font-style: normal">MANGE (A-D)</SPAN></P>
+<P  ><BR>
+</P>
+<P  ><I>Termine =
+</I><SPAN STYLE="font-style: normal">TERMINE
+&lt;nombre_pions_terminés_total&gt;</SPAN></P>
+<P  ><BR>
+</P>
+<P  ><B>Fonctions
+d'aide, questions</B></P>
+<P  ><BR>
+</P>
+<P 
+<I>Demande_plateau </I>= PLATEAU</P>
+<P  ><BR>
+</P>
+<P 
+<I>Demande_possibilités </I>= POSSIBILITES <I>Carte</I>?</P>
+<P 
+<BR>
+</P>
+<P  ><B>Fonctions
+d'aide, réponses</B></P>
+<P  ><BR>
+</P>
+<P 
+<I>Description_plateau </I>= <I>Description_Joueur,
+Description_Joueur, Description_Joueur,  Description_Joueur</I></P>
+<P  ><BR>
+</P>
+<P 
+<I>Description_Joueur</I> = DESCRIPTION_JOUEUR &lt;lettre&gt;
+&lt;nb_ecurie&gt; &lt;nb_terminés&gt; <I>Bloqueur</I> <I>Case</I>*</P>
+<P 
+<BR>
+</P>
+<P 
+<I>Bloqueur </I>= true | false</P>
+<P 
+<BR>
+</P>
+<P 
+<I>Possibilités</I> = <I>Choix</I>+, FIN</P>
+<P 
+<BR>
+</P>
+<P 
+<I>Choix </I>= <I>Pose&nbsp;;</I> <I>Action (&nbsp;;
+Action</I>)* 
+</P>
+<P 
+<BR>
+</P>
+<h3 ><I>Cas concrets</I></h3>
+<P  ><BR>
+</P>
+<P  ><I>Echanges, cas
+concrets&nbsp;; le client a <B>cinq secondes pour répondre</B> quand
+c'est son tour.</I></P>
+<P  ><BR>
+</P>
+<P  ><I>Echanges entre le
+serveur et le joueur C</I></P>
+<P  ><BR>
+</P>
+<P  ><I>Phase de bienvenue</I></P>
+<P  ><BR>
+</P>
+<TABLE WIDTH=100% CELLPADDING=4 CELLSPACING=0>
+	<COL WIDTH=128*>
+	<COL WIDTH=128*>
+	<TR VALIGN=TOP>
+		<TD>
+			<P ><B>Serveur</B></P>
+		</TD>
+		<TD WIDTH=50% >
+			<P ><B>Client</B></P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >BIENVENUE C</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >IDENTIFICATION DevastaTok v2.1</P>
+		</TD>
+	</TR>
+</TABLE>
+<P  ><BR>
+</P>
+<P  ><I>Phase de pioche</I></P>
+<P  ><BR>
+</P>
+<TABLE WIDTH=100% CELLPADDING=4 CELLSPACING=0>
+	<COL WIDTH=128*>
+	<COL WIDTH=128*>
+	<TR VALIGN=TOP>
+		<TD>
+			<P ><B>Serveur</B></P>
+		</TD>
+		<TD WIDTH=50% >
+			<P ><B>Client</B></P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >NOUVELLE_MAIN</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >PIOCHE 1</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >PIOCHE J</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >PIOCHE 4</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >PIOCHE 6</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >FIN</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >DONNE 1</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >PIOCHE 7</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+</TABLE>
+<P  ><BR>
+</P>
+<P  >Le
+serveur indique au joueur ce que lui a donné le joueur A une fois
+que les deux ont donné leur carte.</P>
+<P  ><BR>
+</P>
+<P  ><I>Phase de jeu</I></P>
+<P  ><BR>
+</P>
+<TABLE WIDTH=100% CELLPADDING=4 CELLSPACING=0>
+	<COL WIDTH=128*>
+	<COL WIDTH=128*>
+	<TR VALIGN=TOP>
+		<TD>
+			<P ><B>Serveur</B></P>
+		</TD>
+		<TD WIDTH=50% >
+			<P ><B>Client</B></P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >JOUEUR A</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >CARTE 8</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >DEPLACE A1-A9</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >FIN</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >JOUEUR B</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >CARTE 2</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >DEPLACE C2-C4</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >FIN</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >JOUEUR C</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >CARTE V</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >ECHANGE C0-D4</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >FIN</P>
+		</TD>
+	</TR>
+</TABLE>
+<P  ><BR>
+</P>
+<P  >Le
+serveur recopie pour tous les actions faites par chaque joueur, au
+fur et à mesure. Les cinq secondes de temps de réponse sont
+comptées jusqu'au mot-clé FIN qui est obligatoire. En cas de
+dépassement, c'est une défaite.</P>
+<P  ><BR>
+</P>
+<P  ><I>Phase de jeu avec
+prise</I></P>
+<P  ><BR>
+</P>
+<TABLE WIDTH=100% CELLPADDING=4 CELLSPACING=0>
+	<COL WIDTH=128*>
+	<COL WIDTH=128*>
+	<TR VALIGN=TOP>
+		<TD>
+			<P ><B>Serveur</B></P>
+		</TD>
+		<TD WIDTH=50% >
+			<P ><B>Client</B></P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >JOUEUR C</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >CARTE R</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >DEPLACE C0-C13</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >MANGE B</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >MANGE D</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >FIN</P>
+		</TD>
+	</TR>
+</TABLE>
+<P  ><BR>
+</P>
+<P  >Les
+mots-clés MANGE sont obligatoires juste après le déplacement qui a
+provoqué la prise, autant de fois que de pions mangés. En cas de
+manquement c'est une défaite.<I>Phase de jeu avec 7 et victoire d'un
+pion</I></P>
+<P  ><BR>
+</P>
+<TABLE WIDTH=100% CELLPADDING=4 CELLSPACING=0>
+	<COL WIDTH=128*>
+	<COL WIDTH=128*>
+	<TR VALIGN=TOP>
+		<TD>
+			<P ><B>Serveur</B></P>
+		</TD>
+		<TD WIDTH=50% >
+			<P ><B>Client</B></P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >JOUEUR C</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >CARTE 7</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >DEPLACE C18-C21</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >TERMINE 2</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >DEPLACE D0-D4</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >FIN</P>
+		</TD>
+	</TR>
+</TABLE>
+<P  ><BR>
+</P>
+<P  >Le
+mot-clé TERMINE est obligatoire pour signifier que le pion est
+arrivé au bout. Ici c'est le 2e pion à rentrer.</P>
+<P  ><BR>
+</P>
+<P  ><I>Phase de jeu avec
+joker</I></P>
+<P  ><BR>
+</P>
+<TABLE WIDTH=100% CELLPADDING=4 CELLSPACING=0>
+	<COL WIDTH=128*>
+	<COL WIDTH=128*>
+	<TR VALIGN=TOP>
+		<TD>
+			<P ><B>Serveur</B></P>
+		</TD>
+		<TD WIDTH=50% >
+			<P ><B>Client</B></P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >JOUEUR C</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >CARTE J</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >DEPLACE C0-D0</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >FIN</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >PIOCHE 7</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >CARTE 2</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >DEPLACE D0-D2</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >FIN</P>
+		</TD>
+	</TR>
+</TABLE>
+<P  ><BR>
+</P>
+<P  >Avec
+un joker, le temps de 5 secondes est réinitialisé lors de la
+pioche.</P>
+<P  ><BR>
+</P>
+<P  ><I>Phase de jeu avec jet
+de cartes</I></P>
+<P  ><BR>
+</P>
+<TABLE WIDTH=100% CELLPADDING=4 CELLSPACING=0>
+	<COL WIDTH=128*>
+	<COL WIDTH=128*>
+	<TR VALIGN=TOP>
+		<TD>
+			<P ><B>Serveur</B></P>
+		</TD>
+		<TD WIDTH=50% >
+			<P ><B>Client</B></P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >JOUEUR C</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >CARTE 6</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >JETTE</P>
+		</TD>
+	</TR>
+</TABLE>
+<P  ><BR>
+</P>
+<P  ><I>Phase de jeu avec
+utilisation des fonctions d'aide</I></P>
+<P  ><BR>
+</P>
+<P  >Le
+joueur C a un six et un roi.</P>
+<TABLE WIDTH=642 CELLPADDING=4 CELLSPACING=0>
+	<COL WIDTH=322>
+	<COL WIDTH=302>
+	<TR VALIGN=TOP>
+		<TH >
+			<P ALIGN=LEFT>Serveur</P>
+		</TH>
+		<TH WIDTH=302 >
+			<P ALIGN=LEFT>Client</P>
+		</TH>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P >JOUEUR C</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P  >PLATEAU</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P  >DESCRIPTION_JOUEUR
+			A 0 1 true A0 C14 D1</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P  >DESCRIPTION_JOUEUR
+			B 2 2 false</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P  >DESCRIPTION_JOUEUR
+			C 3 0 false C2</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P  >DESCRIPTION_JOUEUR
+			D 3 1 false</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P  ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >POSSIBILITES</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P  >CARTE
+			R&nbsp;; SORT</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P  >CARTE
+			R&nbsp;; DEPLACE C2 C15&nbsp;; MANGE A</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P  >CARTE
+			6&nbsp;; DEPLACE C2 C8</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P  >FIN</P>
+		</TD>
+		<TD >
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P  ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >CARTE R</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P  ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >SORT</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD >
+			<P  ><BR>
+			</P>
+		</TD>
+		<TD >
+			<P >FIN</P>
+		</TD>
+	</TR>
+</TABLE>
 
