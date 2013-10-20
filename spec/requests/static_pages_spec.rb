@@ -11,17 +11,17 @@ describe "Static pages" do
 
   describe "Home page" do
     before { visit root_path }
-    let(:heading)    { 'Sample App' }
+    let(:heading)    { 'Tok IA' }
     let(:page_title) { '' }
 
     it_should_behave_like "all static pages"
     it { should_not have_title('| Home') }
   end
 
-  describe "Help page" do
-    before { visit help_path }
-    let(:heading)    { 'Help' }
-    let(:page_title) { 'Help' }
+  describe "Rules page" do
+    before { visit rules_path }
+    let(:heading)    { 'règles' }
+    let(:page_title) { 'Règles' }
 
     it_should_behave_like "all static pages"
   end
