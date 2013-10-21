@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131020182519) do
+ActiveRecord::Schema.define(version: 20131021214955) do
 
   create_table "ais", force: true do |t|
     t.string   "name"
@@ -26,9 +26,9 @@ ActiveRecord::Schema.define(version: 20131020182519) do
   create_table "matches", force: true do |t|
     t.integer  "ai_1_id"
     t.integer  "ai_2_id"
-    t.integer  "winner"
-    t.integer  "winner1"
-    t.integer  "winner2"
+    t.integer  "winner_id"
+    t.integer  "winner1_id"
+    t.integer  "winner2_id"
     t.string   "log1"
     t.string   "log2"
     t.datetime "created_at"
@@ -37,9 +37,9 @@ ActiveRecord::Schema.define(version: 20131020182519) do
 
   add_index "matches", ["ai_1_id"], name: "index_matches_on_ai_1_id"
   add_index "matches", ["ai_2_id"], name: "index_matches_on_ai_2_id"
-  add_index "matches", ["winner"], name: "index_matches_on_winner"
-  add_index "matches", ["winner1"], name: "index_matches_on_winner1"
-  add_index "matches", ["winner2"], name: "index_matches_on_winner2"
+  add_index "matches", ["winner1_id"], name: "index_matches_on_winner1_id"
+  add_index "matches", ["winner2_id"], name: "index_matches_on_winner2_id"
+  add_index "matches", ["winner_id"], name: "index_matches_on_winner_id"
 
   create_table "users", force: true do |t|
     t.string   "name"
