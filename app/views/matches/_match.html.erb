@@ -1,0 +1,9 @@
+<li>
+  Partie à <%= match.created_at %> par l'IA <%= @ai.name %>
+  <p>
+  <% if @ai.id == match.winner %>
+  Victoire !
+  <% end %>
+  </p>
+  
+</li>

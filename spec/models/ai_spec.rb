@@ -3,8 +3,6 @@ require 'spec_helper'
 describe Ai do
   let(:user) { FactoryGirl.create(:user) }
   before do
-    # This code is not idiomatically correct.
-    # @ai =Ai.new(name: "Super IA", user_id: user.id)
     @ai = user.ais.build(name: "Super IA")
 
   end

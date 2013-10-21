@@ -13,6 +13,8 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
+    @ai = @user.ais.first
+    @matches = @ai.matches
   end
 
   def create
