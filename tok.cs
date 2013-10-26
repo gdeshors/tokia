@@ -1,9 +1,12 @@
 
 log_t = """
 S DONNE A R 10 R V
+B DEPLACE B-4 A0
+B FIN
 A DONNE R
 A POSE R
 A SORT
+A MANGE B A0
 A FIN
 A POSE 10
 A DEPLACE A0 A10
@@ -11,11 +14,13 @@ A FIN
 A POSE J
 A DEPLACE A10 B10
 A FIN
+B MANGE A B10
+B FIN
 A DEPLACE B10 A-4
 A FIN
 """
  
-actions_dep = ["SORT", "DEPLACE", "ECHANGE"] 
+actions_dep = ["SORT", "DEPLACE", "ECHANGE", "MANGE"] 
  
 Array::has = (elt) ->
 	@indexOf(elt) != -1 
@@ -79,6 +84,7 @@ class Pawn
     ry = 6
     h = 7
     coul = couleur(_j)
+    this.joueur = _j
     this.svgSet = paper.set()
     c1 = paper.ellipse(p[0], p[1], rx , ry).attr("fill", coul);
     c2 = paper.rect(p[0] - rx, p[1] - h, 2 * rx, h)
@@ -98,7 +104,7 @@ class Pawn
 
     
   moveTo: (_pos, _bloqueur=false) ->
-    pions[this.slot] = null unless this.slot is null
+    pions[this.slot] = null 
     p1 = xy position('M')
     p2 = xy position(_pos)
     this.slot = _pos
@@ -109,7 +115,9 @@ class Pawn
     if (_bloqueur)
       this.chapeau.animate( {fill: "#000"}, 1000, anim);
       this.bloqueur = true
-    pions[this.slot] = this
+    manges[_pos] = pions[_pos] if pions[_pos]?
+    #write manges[_pos]
+    pions[_pos] = this
 
  
 drawCase = (_pos) ->
@@ -128,6 +136,7 @@ for joueur in ['A', 'B', 'C', 'D']
   drawCase('M')
 
 pions = {}
+manges = {}
 # initialiser les pions dans leur écurie 
 for joueur in ['A', 'B', 'C', 'D']
   do (joueur) ->
@@ -143,8 +152,14 @@ for joueur in ['A', 'B', 'C', 'D']
  
 #write pions["A-1"]
 
-prochainPion = (joueur) ->
-  "A-4"
+prochainPion = (_j) ->
+  retour = null
+  for i in [-1..-4]
+    do (i) ->
+      pos = _j + i
+      if pions[pos]?
+        retour = pos
+  return retour
 
 
 #pions[prochainPion('A')].moveTo('A0', true)
@@ -156,6 +171,27 @@ execute = (args) ->
   switch args[1]
     when 'SORT' then pions[prochainPion(joueur)].moveTo(joueur + "0", true)
     when 'DEPLACE' then pions[args[2]].moveTo(args[3])
+    when 'MANGE' then mange(args[2], args[3])
+
+mange = (_j, _pos) ->
+  pion = if manges[_pos] then manges[_pos] else pions[_pos]
+  if pion.joueur isnt _j then write "ATTENTION BUG #{_j} isnt #{pion.joueur}"
+  nouvellePos = ecurieLibre(_j)
+  #sauver le pion !
+  pionMangeur = pions[_pos]
+  pion.moveTo nouvellePos
+  pions[nouvellePos] = pion
+  pions[_pos] = pionMangeur
+
+ecurieLibre = (_j) ->
+  retour = null
+  for i in [-4..-1]
+    do (i) ->
+      pos = _j + i
+      #write pos
+      if not pions[pos]?
+        retour = pos
+  return retour
 
 courante = 0
 next = () ->
