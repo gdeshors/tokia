@@ -8,6 +8,11 @@ A FIN
 A POSE 10
 A DEPLACE A0 A10
 A FIN
+A POSE J
+A DEPLACE A10 B10
+A FIN
+A DEPLACE B10 A-4
+A FIN
 """
  
 actions_dep = ["SORT", "DEPLACE", "ECHANGE"] 
@@ -55,7 +60,8 @@ xy = (_pos) ->
   [ (_pos[0] + 1) * LARGEUR_CASE, (_pos[1] + 1) * HAUTEUR_CASE ];
  
 paper = Raphael(100, 10, 650, 600)
- 
+
+anim = '<>'
  
 couleur = (j) -> 
   switch j
@@ -67,9 +73,8 @@ couleur = (j) ->
  
 class Pawn
   constructor: (_pos, _j, _bloqueur=false) ->
-    this.slot = _pos
-    this.bloqueur = _bloqueur
-    p = xy position(_pos)
+    p = xy position('M')
+    pDest = xy position(_pos)
     rx = 8
     ry = 6
     h = 7
@@ -89,23 +94,20 @@ class Pawn
     c6 = paper.rect(p[0] + rx, p[1] - h, 0.1, h)
     this.svgSet.push(c1, c2, c3, c4, c5, c6)
     pions[this.slot] = this
+    this.moveTo(_pos, _bloqueur)
 
     
   moveTo: (_pos, _bloqueur=false) ->
-    pions[this.slot] = null
-    write this.slot
-    write _pos
-    p1 = xy position(this.slot)
+    pions[this.slot] = null unless this.slot is null
+    p1 = xy position('M')
     p2 = xy position(_pos)
-    write p1
-    write p2
     this.slot = _pos
-    this.svgSet.animate( {transform: "t#{p2[0]-p1[0]},#{p2[1]-p1[1]}"}, 1000, 'backIn');
+    this.svgSet.animate( {transform: "t#{p2[0]-p1[0]},#{p2[1]-p1[1]}"}, 1000, anim);
     if (this.bloqueur)
       this.bloqueur = false
-      this.chapeau.animate( {fill: "#fff"}, 1000, 'backIn');
+      this.chapeau.animate( {fill: "#fff"}, 1000, anim);
     if (_bloqueur)
-      this.chapeau.animate( {fill: "#000"}, 1000, 'backIn');
+      this.chapeau.animate( {fill: "#000"}, 1000, anim);
       this.bloqueur = true
     pions[this.slot] = this
 
@@ -143,6 +145,8 @@ for joueur in ['A', 'B', 'C', 'D']
 
 prochainPion = (joueur) ->
   "A-4"
+
+
 #pions[prochainPion('A')].moveTo('A0', true)
 
 execute = (args) ->
