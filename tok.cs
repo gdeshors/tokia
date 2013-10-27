@@ -4,11 +4,11 @@ A SORT
 A FIN
 B SORT
 B FIN
-B DEPLACE B-4 A2
+B DEPLACE B0 A2
 B FIN
 C SORT
 C FIN
-C DEPLACE C-4 A5
+C DEPLACE C0 A5
 C FIN
 A POSE 2
 A DEPLACE A0 A2
@@ -38,10 +38,10 @@ class Log
         args = line.split(" ")
         if (args[1] is "SORT") then vals[args[0]]++
         if (args[1] is "MANGE") then vals[args[2]]--
-        numLigne++
         if args[1] is "FIN"
+          data.push({n:numAction, A: vals.A, B: vals.B, C: vals.C, D: vals.D})
           actions[numAction++] = numLigne 
-          data.push({n:numLigne, A: vals.A, B: vals.B, C: vals.C, D: vals.D})
+        numLigne++
     this.actions = actions
     $('#total').html(actions.length-1)
     this.data = data
@@ -243,12 +243,12 @@ Morris.Area({
   xkey: 'n',
   ykeys: ['A', 'B', 'C', 'D'],
   labels: ['A', 'B', 'C', 'D'],
-  lineColors: ["#ff0", "#0d0", "#33f", "#f00"]
+  lineColors: ["#ff0", "#0d0", "#33f", "#f00"],
+  hideHover : true,
+  parseTime: false
 });
   
   
-write "fin"
-
 
 
 root = exports ? this
