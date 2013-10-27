@@ -1,22 +1,15 @@
 
 log_t = """
-S DONNE A R 10 R V
-B DEPLACE B-4 A0
-B FIN
-A DONNE R
-A POSE R
 A SORT
-A MANGE B A0
 A FIN
-A SORT
-A MANGE A A0
-A FIN 
-B SORT
+B DEPLACE B-4 A2
 B FIN
-A ECHANGE A0 B0
+C DEPLACE C-4 A5
+C FIN
+A POSE 2
+A DEPLACE A0 A2
+A MANGE B A2
 A FIN
-B ECHANGE A0 B0
-B FIN
 """
  
 actions_dep = ["SORT", "DEPLACE", "ECHANGE", "MANGE"] 
@@ -64,7 +57,7 @@ position = (val) ->
 xy = (_pos) ->
   [ (_pos[0] + 1) * LARGEUR_CASE, (_pos[1] + 1) * HAUTEUR_CASE ];
  
-paper = Raphael(100, 10, 650, 600)
+paper = Raphael(40, 40, 650, 600)
 
 anim = '<>'
  
@@ -163,7 +156,19 @@ execute = (args) ->
     when 'DEPLACE' then pions[args[2]].moveTo(args[3])
     when 'MANGE' then mange(args[2], args[3])
     when 'ECHANGE' then echange(args[2], args[3])
-
+    
+    
+undo = (args) ->
+  #jouer un coup
+  write args
+  joueur = args[0]
+  switch args[1]
+    when 'SORT' then pions[joueur + "0"].moveTo(ecurieLibre(joueur))
+    when 'DEPLACE' then pions[args[3]].moveTo(args[2])
+    when 'MANGE' then pions[prochainPion(args[2])].moveTo(args[3])
+    when 'ECHANGE' then echange(args[2], args[3])
+    
+    
 mange = (_j, _pos) ->
   pion = if manges[_pos] then manges[_pos] else pions[_pos]
   if pion.joueur isnt _j then write "ATTENTION BUG #{_j} isnt #{pion.joueur}"
@@ -201,9 +206,7 @@ majCourante = ->
 majCourante()
 
 next = () ->
-  # lire les lignes de position à position +1 
-  # trouver les actions
-  # exécuter les actions
+  if courante is log.actions.length - 1 then return
   for n in [log.actions[courante]..log.actions[courante+1]]
     do (n) ->
       args = log.lines[n].split(" ")
@@ -211,10 +214,20 @@ next = () ->
   courante++
   majCourante()
 
+prev = () ->
+  if courante is 0 then return
+  for n in [log.actions[courante-1]..log.actions[courante]]
+    do (n) ->
+      args = log.lines[n].split(" ")
+      undo(args) if actions_dep.has(args[1])
+  courante--
+  majCourante()
+
 
 
 root = exports ? this
 root.next = -> next()
+root.prev = -> prev()
 
 write "fin"
 
