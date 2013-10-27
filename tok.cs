@@ -2,8 +2,12 @@
 log_t = """
 A SORT
 A FIN
+B SORT
+B FIN
 B DEPLACE B-4 A2
 B FIN
+C SORT
+C FIN
 C DEPLACE C-4 A5
 C FIN
 A POSE 2
@@ -24,15 +28,23 @@ class Log
   constructor: (_log) ->  
     numLigne = 0
     numAction = 1
+    data = []
+    vals = {A: 0, B: 0, C:0, D:0}
+    data.push({n:numLigne, A: vals.A, B: vals.B, C: vals.C, D: vals.D})
     this.lines = _log.split("\n")
     actions = [0]
     for line in this.lines
       do (line) -> 
         args = line.split(" ")
-        actions[numAction++] = numLigne if args[1] == "FIN"
+        if (args[1] is "SORT") then vals[args[0]]++
+        if (args[1] is "MANGE") then vals[args[2]]--
         numLigne++
+        if args[1] is "FIN"
+          actions[numAction++] = numLigne 
+          data.push({n:numLigne, A: vals.A, B: vals.B, C: vals.C, D: vals.D})
     this.actions = actions
     $('#total').html(actions.length-1)
+    this.data = data
 log = new Log(log_t)
             
 #write log.lines
@@ -64,8 +76,8 @@ anim = '<>'
 couleur = (j) -> 
   switch j
     when 'A' then "#ff0"
-    when 'C' then "#33f"
     when 'B' then "#0d0"
+    when 'C' then "#33f"
     when 'D' then "#f00"
     else '#aaa'
  
@@ -222,6 +234,20 @@ prev = () ->
       undo(args) if actions_dep.has(args[1])
   courante--
   majCourante()
+
+
+# gestion du graphique des pions
+Morris.Area({
+  element: 'area-example',
+  data: log.data,
+  xkey: 'n',
+  ykeys: ['A', 'B', 'C', 'D'],
+  labels: ['A', 'B', 'C', 'D'],
+  lineColors: ["#ff0", "#0d0", "#33f", "#f00"]
+});
+  
+  
+write "fin"
 
 
 
