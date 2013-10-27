@@ -8,16 +8,15 @@ A POSE R
 A SORT
 A MANGE B A0
 A FIN
-A POSE 10
-A DEPLACE A0 A10
-A FIN
-A POSE J
-A DEPLACE A10 B10
-A FIN
-B MANGE A B10
+A SORT
+A MANGE A A0
+A FIN 
+B SORT
 B FIN
-A DEPLACE B10 A-4
+A ECHANGE A0 B0
 A FIN
+B ECHANGE A0 B0
+B FIN
 """
  
 actions_dep = ["SORT", "DEPLACE", "ECHANGE", "MANGE"] 
@@ -40,6 +39,7 @@ class Log
         actions[numAction++] = numLigne if args[1] == "FIN"
         numLigne++
     this.actions = actions
+    $('#total').html(actions.length-1)
 log = new Log(log_t)
             
 #write log.lines
@@ -144,13 +144,6 @@ for joueur in ['A', 'B', 'C', 'D']
       do (c) ->
         slot = joueur + c
         new Pawn(slot, joueur)
-#pion = new Pawn('A0', 'A', true)
-#pion.moveTo 'D3'
-
-#pion = new Pawn('D3', 'C')
-#pion.moveTo 'M'
- 
-#write pions["A-1"]
 
 prochainPion = (_j) ->
   retour = null
@@ -161,9 +154,6 @@ prochainPion = (_j) ->
         retour = pos
   return retour
 
-
-#pions[prochainPion('A')].moveTo('A0', true)
-
 execute = (args) ->
   #jouer un coup
   write args
@@ -172,16 +162,26 @@ execute = (args) ->
     when 'SORT' then pions[prochainPion(joueur)].moveTo(joueur + "0", true)
     when 'DEPLACE' then pions[args[2]].moveTo(args[3])
     when 'MANGE' then mange(args[2], args[3])
+    when 'ECHANGE' then echange(args[2], args[3])
 
 mange = (_j, _pos) ->
   pion = if manges[_pos] then manges[_pos] else pions[_pos]
   if pion.joueur isnt _j then write "ATTENTION BUG #{_j} isnt #{pion.joueur}"
   nouvellePos = ecurieLibre(_j)
-  #sauver le pion !
+  #sauvegarder le pion !
   pionMangeur = pions[_pos]
   pion.moveTo nouvellePos
   pions[nouvellePos] = pion
   pions[_pos] = pionMangeur
+
+  
+echange = (_pos1, _pos2) ->
+  pion1 = pions[_pos1]
+  pion2 = pions[_pos2]
+  pion1.moveTo(ecurieLibre(pion1.joueur))
+  pion2.moveTo(_pos1)
+  pion1.moveTo(_pos2)
+
 
 ecurieLibre = (_j) ->
   retour = null
@@ -194,21 +194,25 @@ ecurieLibre = (_j) ->
   return retour
 
 courante = 0
+
+majCourante = ->
+  $('#courante').html(courante)
+  
+majCourante()
+
 next = () ->
   # lire les lignes de position à position +1 
   # trouver les actions
   # exécuter les actions
   for n in [log.actions[courante]..log.actions[courante+1]]
     do (n) ->
-      #write n
-      #write log.lines[n]
       args = log.lines[n].split(" ")
       execute(args) if actions_dep.has(args[1])
-      #write(args) if actions_dep.has(args[1])
-
   courante++
+  majCourante()
 
-#next()
+
+
 root = exports ? this
 root.next = -> next()
 
