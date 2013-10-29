@@ -9,10 +9,11 @@ anim = '<>'
 
 class @Board
 
-  constructor: () ->
-    this.paper = Raphael(40, 40, 650, 600)
+  constructor: (_log) ->
+    this.paper = Raphael(600, 100, 650, 600)
     this.pions = {}
-    this.manges = {}
+    this.manges = {}a
+    @log = _log
     
   init: ->
     for joueur in ['A', 'B', 'C', 'D']
@@ -123,4 +124,24 @@ class @Board
     pion2.moveTo(_pos1)
     pion1.moveTo(_pos2)
 
+  next: ->
+    if courante is log.actions.length - 1 then return
+    for n in [@log.actions[courante]..@log.actions[courante+1]]
+      do (n) =>
+        args = @log.lines[n].split(" ")
+        @execute(args)
+        courante++
+    @majCourante()
 
+  prev: ->
+    if courante is 0 then return
+    for n in [@log.actions[courante-1]..@log.actions[courante]]
+      do (n) =>
+        args = @log.lines[n].split(" ")
+        @undo(args)
+        courante--
+    @majCourante()
+
+
+  majCourante: ->
+    $('#courante').html(courante)

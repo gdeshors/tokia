@@ -29,28 +29,11 @@ write "début"
 
 courante = 0
 
-majCourante = ->
-  $('#courante').html(courante)
+
   
 majCourante()
 
-next = () ->
-  if courante is log.actions.length - 1 then return
-  for n in [log.actions[courante]..log.actions[courante+1]]
-    do (n) ->
-      args = log.lines[n].split(" ")
-      board.execute(args) if actions_dep.has(args[1])
-  courante++
-  majCourante()
 
-prev = () ->
-  if courante is 0 then return
-  for n in [log.actions[courante-1]..log.actions[courante]]
-    do (n) ->
-      args = log.lines[n].split(" ")
-      board.undo(args) if actions_dep.has(args[1])
-  courante--
-  majCourante()
 
 $ ->
   # gestion du graphique des pions
@@ -67,10 +50,10 @@ $ ->
   })
 
   board = new Board()
-  board.init()
+  board.init(log)
 
 root = exports ? this
-root.next = -> next()
+root.next = -> board.next()
 root.prev = -> prev()
 
 write "fin"
