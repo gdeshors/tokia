@@ -12,8 +12,8 @@ class @Board
   constructor: (_log) ->
     this.paper = Raphael(600, 100, 650, 600)
     this.pions = {}
-    this.manges = {}a
-    @log = _log
+    this.manges = {}
+    this.log = _log
     
   init: ->
     for joueur in ['A', 'B', 'C', 'D']
@@ -30,6 +30,8 @@ class @Board
           do (c) =>
             slot = joueur + c
             new Pawn(this, slot, joueur)
+    this.courante = 0
+    @majCourante()
 
   xy: (_pos) ->
     [ (_pos[0] + 1) * LARGEUR_CASE, (_pos[1] + 1) * HAUTEUR_CASE ]
@@ -125,23 +127,23 @@ class @Board
     pion1.moveTo(_pos2)
 
   next: ->
-    if courante is log.actions.length - 1 then return
+    if courante is @log.actions.length - 1 then return
     for n in [@log.actions[courante]..@log.actions[courante+1]]
       do (n) =>
         args = @log.lines[n].split(" ")
         @execute(args)
-        courante++
+        @courante++
     @majCourante()
 
   prev: ->
-    if courante is 0 then return
-    for n in [@log.actions[courante-1]..@log.actions[courante]]
+    if @courante is 0 then return
+    for n in [@log.actions[@courante-1]..@log.actions[@courante]]
       do (n) =>
         args = @log.lines[n].split(" ")
         @undo(args)
-        courante--
+        @courante--
     @majCourante()
 
 
   majCourante: ->
-    $('#courante').html(courante)
+    $('#courante').html(@courante)

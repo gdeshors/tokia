@@ -30,11 +30,9 @@ write "début"
 courante = 0
 
 
-  
-majCourante()
 
 
-
+plateau = ""
 $ ->
   # gestion du graphique des pions
   log = new Log(log_t)
@@ -48,13 +46,12 @@ $ ->
     hideHover : true,
     parseTime: false
   })
-
-  board = new Board()
-  board.init(log)
+  plateau = new Board(log)
+  plateau.init()
 
 root = exports ? this
-root.next = -> board.next()
-root.prev = -> prev()
+root.next = -> plateau.next()
+root.prev = -> plateau.prev()
 
 write "fin"
 

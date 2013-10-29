@@ -8,7 +8,7 @@ class @Log
     this.lines = _log.split("\n")
     actions = [0]
     for line in this.lines
-      do (line) ->
+      do (line) =>
         args = line.split(" ")
         if (args[1] is "SORT") then vals[args[0]]++
         if (args[1] is "MANGE") then vals[args[2]]--
