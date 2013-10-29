@@ -189,3 +189,15 @@ input {
     }
   }
 }
+
+
+/* positionnement du graphique de parties */
+
+
+#gamechart {
+  position: absolute;
+  top: 600px;
+  height: 200px;
+  width: 800px;
+  
+}
