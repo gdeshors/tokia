@@ -10,7 +10,7 @@ anim = '<>'
 class @Board
 
   constructor: (_log) ->
-    this.paper = Raphael(600, 100, 650, 600)
+    this.paper = Raphael(document.getElementById("board"), 650, 600)
     this.pions = {}
     this.manges = {}
     this.log = _log
@@ -30,7 +30,7 @@ class @Board
           do (c) =>
             slot = joueur + c
             new Pawn(this, slot, joueur)
-    this.courante = 0
+    this.lcourante = 0
     @majCourante()
 
   xy: (_pos) ->
@@ -88,7 +88,7 @@ class @Board
 
   execute: (args) ->
     #jouer un coup
-    write args
+    #write args
     joueur = args[0]
     switch args[1]
       when 'SORT' then this.pions[this.prochainPion(joueur)].moveTo(joueur + "0", true)
@@ -99,7 +99,7 @@ class @Board
       
   undo: (args) ->
     #jouer un coup
-    write args
+    #write args
     joueur = args[0]
     switch args[1]
       when 'SORT' then this.pions[joueur + "0"].moveTo(this.ecurieLibre(joueur))
@@ -127,23 +127,23 @@ class @Board
     pion1.moveTo(_pos2)
 
   next: ->
-    if courante is @log.actions.length - 1 then return
-    for n in [@log.actions[courante]..@log.actions[courante+1]]
+    if @lcourante is @log.actions.length - 1 then return
+    for n in [@log.actions[@lcourante]..@log.actions[@lcourante + 1]]
       do (n) =>
         args = @log.lines[n].split(" ")
         @execute(args)
-        @courante++
+    @lcourante++
     @majCourante()
 
   prev: ->
-    if @courante is 0 then return
-    for n in [@log.actions[@courante-1]..@log.actions[@courante]]
+    if @lcourante is 0 then return
+    for n in [@log.actions[@lcourante - 1]..@log.actions[@lcourante]]
       do (n) =>
         args = @log.lines[n].split(" ")
         @undo(args)
-        @courante--
+    @lcourante--
     @majCourante()
 
 
   majCourante: ->
-    $('#courante').html(@courante)
+    $('#courante').html(@lcourante)

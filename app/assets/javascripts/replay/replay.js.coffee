@@ -18,12 +18,9 @@ A FIN
 actions_dep = ["SORT", "DEPLACE", "ECHANGE", "MANGE"] 
 
 
-# FIXME a supprimer : ne sert à rien en théorie
-Array::has = (elt) ->
-	@indexOf(elt) != -1 
  
-write = (t) -> $('body').append "<p>" + t + "</p>"
-write "début"
+#write = (t) -> $('body').append "<p>" + t + "</p>"
+#write "début"
 
 
 
@@ -53,5 +50,5 @@ root = exports ? this
 root.next = -> plateau.next()
 root.prev = -> plateau.prev()
 
-write "fin"
+#write "fin"
 

@@ -1,5 +1,7 @@
 class @Pawn
+  
   constructor: (_board, _pos, _j, _bloqueur=false) ->
+    @anim = "<>"
     this.board = _board
     p = this.board.xy_position('M')
     pDest = this.board.xy_position(_pos)
@@ -32,13 +34,13 @@ class @Pawn
     p1 = this.board.xy_position('M')
     p2 = this.board.xy_position(_pos)
     this.slot = _pos
-    this.svgSet.animate( {transform: "t#{p2[0]-p1[0]},#{p2[1]-p1[1]}"}, 1000, '<>')
+    this.svgSet.animate( {transform: "t#{p2[0]-p1[0]},#{p2[1]-p1[1]}"}, 1000, @anim)
     # FIXME mettre une vraie anim
     if (this.bloqueur)
       this.bloqueur = false
-      this.chapeau.animate( {fill: "#fff"}, 1000, anim)
+      this.chapeau.animate( {fill: "#fff"}, 1000, @anim)
     if (_bloqueur)
-      this.chapeau.animate( {fill: "#000"}, 1000, anim)
+      this.chapeau.animate( {fill: "#000"}, 1000, @anim)
       this.bloqueur = true
     this.board.manges[_pos] = this.board.pions[_pos] if this.board.pions[_pos]?
     this.board.pions[_pos] = this

@@ -1,15 +1,9 @@
 <% provide(:title, 'Tok Replay') %>
-<div class="row">
-  <aside class="span4">
-    <section>
-      <h1>
-      </h1>
-    </section>
-  </aside>
 
 
-    <a onclick='prev()' href='#'>prev</a>  <span id='courante'></span>/<span id='total'></span>  <a onclick='next()' href='#'>next</a>
-
+<input type="button" value="Prev" id="btnPrev"  onclick="prev();"/> 
+    <span id='courante'></span>/<span id='total'></span>  
+<input type="button" value="Next" id="btnNext"  onclick="next();"/> 
   <li>
 
   <ul class="matches">
@@ -23,4 +17,3 @@
 <div id="gamechart"></div>
   
 
-</div>
