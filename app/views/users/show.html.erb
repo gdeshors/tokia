@@ -15,7 +15,9 @@
   <li>
 
   <ul class="matches">
-    <%= render @matches %>
+    <% if @ai != nil %>
+    <%= render @ai.matches %>
+    <% end %>
   </ul>
 
   </li>

@@ -10,7 +10,7 @@ anim = '<>'
 class @Board
 
   constructor: (_log) ->
-    this.paper = Raphael(document.getElementById("board"), 650, 600)
+    this.paper = Raphael(document.getElementById("board"), 440, 400)
     this.pions = {}
     this.manges = {}
     this.log = _log

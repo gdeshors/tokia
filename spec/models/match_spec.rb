@@ -5,9 +5,9 @@ describe Match do
   let(:user2) { FactoryGirl.create(:user) }
   before do
     # This code is not idiomatically correct.
-    @ai1 = Ai.new(name: "Super IA", user_id: user1.id)
-    @ai2 = Ai.new(name: "Super IA2", user_id: user2.id)
-    @match = Match.new(winner1: user1.id, winner2: user1.id, winner: user1.id, ai_1: @ai1, ai_2: @ai2)
+    @ai1 = Ai.new(name: "Super IA", user: user1)
+    @ai2 = Ai.new(name: "Super IA2", user: user2)
+    @match = Match.new(winner1: @ai1, winner2: @ai1, winner: @ai1, ai_1: @ai1, ai_2: @ai2)
     @match.save
   end
   
