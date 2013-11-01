@@ -5,3 +5,18 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+
+
+user1 = User.create(name:"Guillaume", email:"a@a.com", password: "a", password_confirmation: "a")
+
+ai1 = Ai.create(name:"devastatok", active: true, elo: 1500, version: "1.0", user: user1)
+
+
+
+user2 = User.create(name:"Toto", email:"b@b.com", password: "b", password_confirmation: "b")
+
+ai2 = Ai.create(name:"devastée", active: true, elo: 1500, version: "1.0", user: user2)
+
+
+Match.create(ai_1: ai1, ai_2: ai2, winner1: ai1, winner2: ai1, winner: ai1, log1:"A SORT\nA FIN")
+

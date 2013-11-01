@@ -34,21 +34,22 @@ class @Board
     @majCourante()
 
   xy: (_pos) ->
-    [ (_pos[0] + 1) * LARGEUR_CASE, (_pos[1] + 1) * HAUTEUR_CASE ]
+    [ _pos[0] * LARGEUR_CASE, _pos[1] * HAUTEUR_CASE ]
 
   position: (val) ->
-    return [13, 13] if (val == 'M')
+    return [10, 10] if (val == 'M')
     nval = +val[1..]
-    res = if nval < 18 then [4 + nval, 4] else
-       switch val[0]
-          when 'A', 'D' then [nval - 13, 6]
-          when 'B', 'C' then [nval - 13, 2]
+    res =  switch
+      when nval < 0 then  [1, 7 + nval]
+      when nval < 7 then  [1 + nval, 7]
+      when nval < 13 then  [8, 14 - nval]
+      when nval < 18 then  [nval - 5, 1]
+      else [nval - 16, 9]
     switch val[0]
       when 'A' then res
-      when 'B' then [res[1] + 18, res[0]]
-      when 'C' then [26 - res[0], 18 + res[1]]
-      when 'D' then [res[1], 26 - res[0]]
-      else 'KO'
+      when 'B' then [20 - res[1], res[0]]
+      when 'C' then [20 - res[0], 20 - res[1]]
+      when 'D' then [res[1], 20 - res[0]]
 
   xy_position: (val) ->
     this.xy(this.position(val))
