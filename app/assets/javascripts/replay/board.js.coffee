@@ -1,3 +1,6 @@
+Array.prototype.remove = (arg) ->
+  index = @indexOf(arg)
+  @splice(index, 1) unless index is -1
 
 
 LARGEUR_CASE = 22
@@ -36,10 +39,11 @@ class @Board
 
     #initialiser les cartes
     this.mains = {}
-    @mains['A'] = @paper.text(70, 80, "cartesA")
-    @mains['B'] = @paper.text(335, 90, "cartesB")
-    @mains['C'] = @paper.text(330, 320, "cartesC")
-    @mains['D'] = @paper.text(60, 310, "cartesD")
+    @mains['A'] = @paper.text(70, 80, "")
+    @mains['B'] = @paper.text(335, 90, "")
+    @mains['C'] = @paper.text(330, 320, "")
+    @mains['D'] = @paper.text(60, 310, "")
+    this.tas = @paper.text(220, 170, "")
 
 
   xy: (_pos) ->
@@ -106,7 +110,8 @@ class @Board
       when 'MANGE' then this.mange(args[2], args[3])
       when 'ECHANGE' then this.echange(args[2], args[3])
       when 'PIOCHE' then @pioche(joueur, args[2])
-      
+      when 'POSE' then @pose(joueur, args[2])
+      when 'JETTE' then @jette(joueur)
       
   undo: (args) ->
     #jouer un coup
@@ -117,14 +122,29 @@ class @Board
       when 'DEPLACE' then this.pions[args[3]].moveTo(args[2])
       when 'MANGE' then this.pions[this.prochainPion(args[2])].moveTo(args[3])
       when 'ECHANGE' then this.echange(args[2], args[3])
-      
+      when 'PIOCHE' then @depioche(joueur, args[2])
+      when 'POSE' then @pioche(joueur, args[2])
+       
   pioche: (_j, _carte) ->
     @cartes[_j].push(_carte)
     @majCartes(_j)
     
+  pose: (_j, _carte) ->
+    @tas.attr("text", _carte)
+    @cartes[_j].remove(_carte)
+    @majCartes(_j)
+
+  depioche: (_j, _carte) ->
+    @cartes[_j].remove(_carte)
+    @majCartes(_j)
+
   majCartes: (_j) ->
     #mettre à jour toutes les cartes des joueurs en main
     @mains[_j].attr("text", @cartes[_j])
+
+  jette: (_j) ->
+    @cartes[_j]=[]
+    @majCartes(_j)
 
   mange: (_j, _pos) ->
     pion = if this.manges[_pos] then this.manges[_pos] else this.pions[_pos]
