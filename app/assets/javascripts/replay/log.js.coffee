@@ -6,7 +6,7 @@ class @Log
     vals = {A: 0, B: 0, C:0, D:0}
     data.push({n:numLigne, A: vals.A, B: vals.B, C: vals.C, D: vals.D})
     this.lines = _log.split("\n")
-    actions = [0]
+    actions = [-1] # -1 pour gérer le cas particulier du premier coup
     for line in this.lines
       do (line) =>
         args = line.split(" ")

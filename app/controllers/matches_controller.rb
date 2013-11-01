@@ -13,7 +13,7 @@ class MatchesController < ApplicationController
 
     if @match.update_attributes(match_params)
       # Handle a successful update.
-      flash[:success] = "Match updated"
+      flash[:success] = "Match mis à jour"
       redirect_to @match
     else
       render 'edit'

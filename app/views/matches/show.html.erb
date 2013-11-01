@@ -7,9 +7,9 @@
     <span id='courante'></span>/<span id='total'></span>  
 <input type="button" value="Next" id="btnNext"  onclick="plateau.next();"/> 
 
-
-
 <input id="log" type="hidden" value="<%= @match.log1 %>"></input>
+
+<div id="move"></div>
 
 <div id="board"></div>
   
@@ -19,7 +19,7 @@
   $(function() {
     console.log( 'ready!' );
     log = new Log($("#log").attr("value"));
-    new Gamechart(log, function (i) {plateau.gotoPlay(i)});
+    new Gamechart(log, function (i) {plateau.gotoMove(i)});
     plateau = new Board(log);
     plateau.init();
     console.log("ok");

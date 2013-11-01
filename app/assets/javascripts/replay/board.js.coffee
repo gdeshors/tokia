@@ -112,6 +112,7 @@ class @Board
       when 'PIOCHE' then @pioche(joueur, args[2])
       when 'POSE' then @pose(joueur, args[2])
       when 'JETTE' then @jette(joueur)
+    $("#move").append("<p>"+args.join(" ")+"</p>")
       
   undo: (args) ->
     #jouer un coup
@@ -124,7 +125,8 @@ class @Board
       when 'ECHANGE' then this.echange(args[2], args[3])
       when 'PIOCHE' then @depioche(joueur, args[2])
       when 'POSE' then @pioche(joueur, args[2])
-       
+    $("#move").append("<p>"+args.join(" ")+"</p>")
+
   pioche: (_j, _carte) ->
     @cartes[_j].push(_carte)
     @majCartes(_j)
@@ -166,7 +168,8 @@ class @Board
 
   next: ->
     if @lcourante is @log.actions.length - 1 then return
-    for n in [@log.actions[@lcourante]..@log.actions[@lcourante + 1]]
+    $("#move").html("")
+    for n in [@log.actions[@lcourante]+1..@log.actions[@lcourante + 1]]
       do (n) =>
         args = @log.lines[n].split(" ")
         @execute(args)
@@ -174,8 +177,9 @@ class @Board
     @majCourante()
 
   prev: ->
+    $("#move").html("")
     if @lcourante is 0 then return
-    for n in [@log.actions[@lcourante - 1]..@log.actions[@lcourante]]
+    for n in [@log.actions[@lcourante - 1]+1..@log.actions[@lcourante]]
       do (n) =>
         args = @log.lines[n].split(" ")
         @undo(args)
@@ -186,7 +190,7 @@ class @Board
   majCourante: ->
     $('#courante').html(@lcourante)
 
-  gotoPlay: (_index) ->
+  gotoMove: (_index) ->
     #alert "play n° " + _index
     if _index > @lcourante
       @next() for i in [@lcourante.._index-1]
