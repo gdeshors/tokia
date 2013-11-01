@@ -14,6 +14,7 @@ class @Board
     this.pions = {}
     this.manges = {}
     this.log = _log
+    this.cartes = {A:[], B: [], C: [], D: []}
     
   init: ->
     for joueur in ['A', 'B', 'C', 'D']
@@ -32,6 +33,14 @@ class @Board
             new Pawn(this, slot, joueur)
     this.lcourante = 0
     @majCourante()
+
+    #initialiser les cartes
+    this.mains = {}
+    @mains['A'] = @paper.text(70, 80, "cartesA")
+    @mains['B'] = @paper.text(335, 90, "cartesB")
+    @mains['C'] = @paper.text(330, 320, "cartesC")
+    @mains['D'] = @paper.text(60, 310, "cartesD")
+
 
   xy: (_pos) ->
     [ _pos[0] * LARGEUR_CASE, _pos[1] * HAUTEUR_CASE ]
@@ -96,6 +105,7 @@ class @Board
       when 'DEPLACE' then this.pions[args[2]].moveTo(args[3])
       when 'MANGE' then this.mange(args[2], args[3])
       when 'ECHANGE' then this.echange(args[2], args[3])
+      when 'PIOCHE' then @pioche(joueur, args[2])
       
       
   undo: (args) ->
@@ -108,7 +118,14 @@ class @Board
       when 'MANGE' then this.pions[this.prochainPion(args[2])].moveTo(args[3])
       when 'ECHANGE' then this.echange(args[2], args[3])
       
-      
+  pioche: (_j, _carte) ->
+    @cartes[_j].push(_carte)
+    @majCartes(_j)
+    
+  majCartes: (_j) ->
+    #mettre à jour toutes les cartes des joueurs en main
+    @mains[_j].attr("text", @cartes[_j])
+
   mange: (_j, _pos) ->
     pion = if this.manges[_pos] then this.manges[_pos] else this.pions[_pos]
     if pion.joueur isnt _j then write "ATTENTION BUG #{_j} isnt #{pion.joueur}"
