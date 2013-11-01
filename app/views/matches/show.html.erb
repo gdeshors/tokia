@@ -19,7 +19,7 @@
   $(function() {
     console.log( 'ready!' );
     log = new Log($("#log").attr("value"));
-    new Gamechart(log);
+    new Gamechart(log, function (i) {plateau.gotoPlay(i)});
     plateau = new Board(log);
     plateau.init();
     console.log("ok");

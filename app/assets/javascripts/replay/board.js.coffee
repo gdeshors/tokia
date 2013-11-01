@@ -148,3 +148,11 @@ class @Board
 
   majCourante: ->
     $('#courante').html(@lcourante)
+
+  gotoPlay: (_index) ->
+    #alert "play n° " + _index
+    if _index > @lcourante
+      @next() for i in [@lcourante.._index-1]
+    else
+      if _index < @lcourante
+        @prev() for i in [_index..@lcourante-1]

@@ -741,6 +741,10 @@
     Line.prototype.onGridClick = function(x, y) {
       var index;
       index = this.hitTest(x, y);
+      //alert(index);
+      if (this.options.onClick) {
+        this.options.onClick(index);
+      }
       return this.fire('click', index, this.options.data[index], x, y);
     };
 
