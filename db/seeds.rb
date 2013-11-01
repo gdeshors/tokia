@@ -7,13 +7,13 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 
-user1 = User.create(name:"Guillaume", email:"a@a.com", password: "a", password_confirmation: "a")
+user1 = User.create(name:"Guillaume", email:"a@a.com", password: "aaaaaa", password_confirmation: "aaaaaa")
 
 ai1 = Ai.create(name:"devastatok", active: true, elo: 1500, version: "1.0", user: user1)
 
 
 
-user2 = User.create(name:"Toto", email:"b@b.com", password: "b", password_confirmation: "b")
+user2 = User.create(name:"Toto", email:"b@b.com", password: "bbbbbb", password_confirmation: "bbbbbb")
 
 ai2 = Ai.create(name:"devastée", active: true, elo: 1500, version: "1.0", user: user2)
 
