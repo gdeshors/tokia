@@ -169,6 +169,7 @@ class @Board
   next: ->
     if @lcourante is @log.actions.length - 1 then return
     $("#move").html("")
+    $("#move").append("<p><strong>"+"Coup n°" + (@lcourante+1) + "</strong></p>")
     for n in [@log.actions[@lcourante]+1..@log.actions[@lcourante + 1]]
       do (n) =>
         args = @log.lines[n].split(" ")
@@ -179,6 +180,7 @@ class @Board
   prev: ->
     $("#move").html("")
     if @lcourante is 0 then return
+    $("#move").append("<p><strong>"+"Coup n°"+@lcourante+" (prochain)</strong></p>")
     for n in [@log.actions[@lcourante - 1]+1..@log.actions[@lcourante]]
       do (n) =>
         args = @log.lines[n].split(" ")
