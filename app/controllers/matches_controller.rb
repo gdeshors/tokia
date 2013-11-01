@@ -1,3 +1,4 @@
+# encoding: utf-8
 class MatchesController < ApplicationController
 
   def show
