@@ -14,7 +14,7 @@ class UsersController < ApplicationController
   def show
     @user = User.find(params[:id])
     @ai = @user.ais.first
-    @matches = @ai.matches
+    @matches = @ai.matches # FIXME bug quand on n'a pas d'ia...
   end
 
   def create
