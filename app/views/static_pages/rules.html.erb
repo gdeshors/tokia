@@ -1,6 +1,6 @@
   <% provide(:title, 'Règles') %>
 <h1>Les règles</h1>
-<p>Version 1.3 - 06/02/2012</p>
+<p>Version 1.4 - 30/10/13</p>
 
 <P  ><I>Historique
 des versions</I></P>
@@ -15,7 +15,10 @@ pioche du joker</P>
 <P >
 1.3, 06/02/12&nbsp;: changement du protocole de communication
 (passage par des trames TCP)</P>
-<p>1.4 (en cours) 30/10/13 : petites corrections + petites modifs sur le protocole</p>
+<p>1.4 (en cours) 30/10/13 : petites corrections + petites modifs sur le protocole : 
+"Jette" doit maintenant indiquer les cartes jetées ; déplacement et échange ne prennent plus 
+un tiret mais un espace entre les cases ; MANGE indique la case du pion mangé ; CARTE devient POSE.
+</p>
 <P  ><BR>
 
 
@@ -32,27 +35,26 @@ des autres joueurs.</P>
 <P >Les participants au concours sont invités à
 développer un client (une IA), le serveur sera fourni et pourra être
 exécuté par les participants lors du développement.</P>
-<P >Les parties opposeront deux instances d'un
-participant contre deux instances d'un autre participant. Il est
+<P >Les parties opposent deux instances d'une ia contre deux instances d'une autre ia. Il est
 interdit de tenter de faire communiquer par quelque moyen que ce soit
 les deux instances qui seront partenaires, autrement qu'en passant
 par le serveur comme prévu dans les échanges.</P>
-<P >Afin de limiter la part de hasard, les matches
-feront intervenir plusieurs parties d'affilée&nbsp;; par ailleurs on
-peut réfléchir à réduire le hasard en distribuant le même set de
-cartes aux deux équipes ou par d'autres moyens. Ces aspects ne sont
-pas fixés.</P>
-<P >Les résultats seront évalués par compte de
-parties gagnées, ou de façon plus évoluée par un classement ELO
-(utilisé pour les joueurs d'échecs par exemple)&nbsp;; c'est aussi
-à déterminer.</P>
+<P >Afin de réduire la part du hasard, les matches sont disputés en deux 
+parties successives dont la distribution est identique, et en inversant la 
+position des ia sur le plateau.
+Un match est gagné si les deux parties sont gagnées. Si la seconde partie 
+comporte davantage de tours que la première, les ditributions suivantes sont aléatoires.
+</p>
+<P >Les résultats sont évalués à l'aide d'un classement ELO
+(utilisé pour les joueurs d'échecs par exemple).
+</P>
 <h2 ><BR><BR>
 </h2>
 <h2 >2 Règles
 du tok utilisées</h2>
 <h3 >Joueurs</h3>
 <P >La partie oppose deux équipes de deux joueurs,
-disposés face à face. Les joueurs sont appelés A, B, C, D. A et C
+disposés face à face. Les joueurs sont appelés A, B, C, D. Les joueurs A et C
 sont donc contre B et D.</P>
 <h3 >Plateau</h3>
 <P >Le plateau fait 4 fois 18 cases, avec 4 places dans
@@ -66,8 +68,8 @@ est notée M.</P>
 <%= image_tag("plateau.gif", alt: "Plateau") %>
 </P>
 <h3 >Partie</h3>
-<P >Le but est de finir les 8 pions de son équipe avant
-l'équipe adverse. Lorsqu'un joueur a fini ses quatre pions il est
+<P >Le but est de terminer les 8 pions de son équipe avant
+l'équipe adverse. Lorsqu'un joueur a terminé ses quatre pions il est
 autorisé à déplacer les pions de son partenaire.</P>
 <P >La partie est composée de <I>paquets</I><SPAN >
 qui seront intégralement distribués sous la formes de </SPAN><I>mains</I><SPAN >
@@ -120,9 +122,9 @@ en première approche on envisagera cinq secondes.</P>
 <P >Le concours n'impose aucune règle sur les langages
 de programmation à utiliser pour faire les clients et les
 participants sont invités à être inventifs et à profiter de
-l'occasion pour découvrir un nouveau langage... Le code généré
-doit être multiplateforme. Le concours se déroulera
-préférentiellement sur un OS linux.</P>
+l'occasion pour découvrir un nouveau langage, open source uniquement.
+Le concours se déroule sur un OS linux (32-bit ARM : Raspberry Pi).
+</P>
 <P >La ligne de commande de lancement du client doit
 prendre comme dernier paramètre le numéro du port sur lequel le
 serveur aura ouvert le socket. Le client se connectera au serveur sur
@@ -149,8 +151,6 @@ liste pour choisir l'action à jouer.</P>
 <P  ><B>Syntaxe&nbsp;:
 </B>
 </P>
-<P  ><BR>
-</P>
 <P >
 En italique&nbsp;: Définition d'un groupe de commandes, sinon la
 commande elle-même.</P>
@@ -170,133 +170,132 @@ X?&nbsp;: zéro ou un X</P>
 <P >
 1-5&nbsp;: 1 à 5</P>
 <P >
-<BR>
-</P>
-<P 
-<BR>
 </P>
 <P  ><B>Côté
 serveur</B></P>
-<P  ><BR>
+<P  >
 </P>
 <P  ><I>Partie</I>
 = BIENVENUE <SPAN >(A-D)</SPAN>, <I>Paquet+,
 </I><SPAN >(VICTOIRE | DEFAITE)</SPAN></P>
-<P  ><BR>
+<P  >
 </P>
 <P  ><I>Paquet</I>
 =  NOUVEAU_PAQUET, <I>Main, Main, Main</I></P>
-<P  ><BR>
+<P  >
 </P>
 <P  ><I>Main</I><SPAN >
 = NOUVELLE_MAIN, </SPAN><I>Pioche</I><SPAN >+,
 FIN, </SPAN><I>Pioche</I><SPAN >, </SPAN><I>Tour</I><SPAN >+</SPAN></P>
-<P  ><BR>
+<P  >
 </P>
 <P  ><I>Tour</I><SPAN >
 = (</SPAN><I>Joueur</I><SPAN >, </SPAN><I>Pioche*</I><SPAN >)+</SPAN></P>
-<P  ><BR>
+<P  >
 </P>
 <P  ><I>Pioche</I><SPAN >
 = PIOCHE </SPAN><I>Carte</I></P>
-<P  ><BR>
+<P  >
 </P>
 <P  ><I>Joueur</I><SPAN >
 = JOUEUR (A-D)</SPAN></P>
-<P  ><BR>
+<P  >
 </P>
 <P  ><I>Carte</I><SPAN >
 = (1-10 | V | D | R | J)</SPAN></P>
-<P  ><BR>
+<P  >
 </P>
 <P  ><B>Côté
 client</B></P>
-<P  ><BR>
+<P  >
 </P>
 <P  ><I>Identification</I>
 = IDENTIFICATION &lt;nom du programme et version&gt;</P>
-<P  ><BR>
+<P  >
 </P>
 <P  ><I>Tour</I><SPAN >
 = (</SPAN><I>Pose</I><SPAN >, </SPAN><I>Action</I><SPAN >+)+,
 FIN</SPAN></P>
-<P  ><BR>
+<P  >
 </P>
 <P  ><I>Pose</I><SPAN >
-= CARTE </SPAN><I>Carte</I></P>
-<P  ><BR>
+= POSE </SPAN><I>Carte</I></P>
+<P  >
 </P>
 <P  ><I>Action </I><SPAN >=
-(SORT | JETTE | </SPAN><I>Deplace</I><SPAN >
+(SORT | <i>Jette</i> | </SPAN><I>Deplace</I><SPAN >
 | </SPAN><I>Echange</I><SPAN >), </SPAN><I>Mange</I><SPAN >*,
 </SPAN><I>Termine</I><SPAN >?</SPAN></P>
-<P  ><BR>
+<p></p>
+<p><i>Jette</i> = JETTE Carte+
+
+<P  >
 </P>
 <P  ><I>Deplace </I><SPAN >=
-DEPLACE </SPAN><I>Case-Case</I></P>
-<P  ><BR>
+DEPLACE </SPAN><I>Case Case</I></P>
+<P  >
 </P>
 <P  ><I>Echange </I><SPAN >=
-ECHANGE </SPAN><I>Case-Case</I></P>
-<P  ><BR>
+ECHANGE </SPAN><I>Case Case</I></P>
+<P  >
 </P>
 <P  ><I>Case </I><SPAN >=
 ((A-D)(0-21))|M</SPAN></P>
-<P  ><BR>
+<P  >
 </P>
 <P  ><I>Mange =
-</I><SPAN >MANGE (A-D)</SPAN></P>
-<P  ><BR>
+</I><SPAN >MANGE (A-D) <i>Case</i></SPAN></P>
+<P  >
 </P>
 <P  ><I>Termine =
 </I><SPAN >TERMINE
 &lt;nombre_pions_terminés_total&gt;</SPAN></P>
-<P  ><BR>
+<P  >
 </P>
 <P  ><B>Fonctions
 d'aide, questions</B></P>
-<P  ><BR>
+<P  >
 </P>
 <P 
 <I>Demande_plateau </I>= PLATEAU</P>
-<P  ><BR>
+<P  >
 </P>
 <P 
 <I>Demande_possibilités </I>= POSSIBILITES <I>Carte</I>?</P>
 <P 
-<BR>
+
 </P>
 <P  ><B>Fonctions
 d'aide, réponses</B></P>
-<P  ><BR>
+<P  >
 </P>
 <P 
 <I>Description_plateau </I>= <I>Description_Joueur,
 Description_Joueur, Description_Joueur,  Description_Joueur</I></P>
-<P  ><BR>
+<P  >
 </P>
 <P 
 <I>Description_Joueur</I> = DESCRIPTION_JOUEUR &lt;lettre&gt;
 &lt;nb_ecurie&gt; &lt;nb_terminés&gt; <I>Bloqueur</I> <I>Case</I>*</P>
 <P 
-<BR>
+
 </P>
 <P 
 <I>Bloqueur </I>= true | false</P>
 <P 
-<BR>
+
 </P>
 <P 
 <I>Possibilités</I> = <I>Choix</I>+, FIN</P>
 <P 
-<BR>
+
 </P>
 <P 
 <I>Choix </I>= <I>Pose&nbsp;;</I> <I>Action (&nbsp;;
 Action</I>)* 
 </P>
 <P 
-<BR>
+
 </P>
 <h3 ><I>Cas concrets</I></h3>
 <P  ><BR>
@@ -464,7 +463,7 @@ que les deux ont donné leur carte.</P>
 	</TR>
 	<TR VALIGN=TOP>
 		<TD >
-			<P >CARTE 8</P>
+			<P >POSE 8</P>
 		</TD>
 		<TD >
 			<P ><BR>
@@ -473,7 +472,7 @@ que les deux ont donné leur carte.</P>
 	</TR>
 	<TR VALIGN=TOP>
 		<TD >
-			<P >DEPLACE A1-A9</P>
+			<P >DEPLACE A1 A9</P>
 		</TD>
 		<TD >
 			<P ><BR>
@@ -500,7 +499,7 @@ que les deux ont donné leur carte.</P>
 	</TR>
 	<TR VALIGN=TOP>
 		<TD >
-			<P >CARTE 2</P>
+			<P >POSE 2</P>
 		</TD>
 		<TD >
 			<P ><BR>
@@ -509,7 +508,7 @@ que les deux ont donné leur carte.</P>
 	</TR>
 	<TR VALIGN=TOP>
 		<TD >
-			<P >DEPLACE C2-C4</P>
+			<P >DEPLACE C2 C4</P>
 		</TD>
 		<TD >
 			<P ><BR>
@@ -540,7 +539,7 @@ que les deux ont donné leur carte.</P>
 			</P>
 		</TD>
 		<TD >
-			<P >CARTE V</P>
+			<P >POSE V</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
@@ -549,7 +548,7 @@ que les deux ont donné leur carte.</P>
 			</P>
 		</TD>
 		<TD >
-			<P >ECHANGE C0-D4</P>
+			<P >ECHANGE C0 D4</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
@@ -601,7 +600,7 @@ prise</I></P>
 			</P>
 		</TD>
 		<TD >
-			<P >CARTE R</P>
+			<P >POSE R</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
@@ -610,7 +609,7 @@ prise</I></P>
 			</P>
 		</TD>
 		<TD >
-			<P >DEPLACE C0-C13</P>
+			<P >DEPLACE C0 C13</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
@@ -619,7 +618,7 @@ prise</I></P>
 			</P>
 		</TD>
 		<TD >
-			<P >MANGE B</P>
+			<P >MANGE B C4</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
@@ -628,7 +627,7 @@ prise</I></P>
 			</P>
 		</TD>
 		<TD >
-			<P >MANGE D</P>
+			<P >MANGE D C6</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
@@ -676,7 +675,7 @@ pion</I></P>
 			</P>
 		</TD>
 		<TD >
-			<P >CARTE 7</P>
+			<P >POSE 7</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
@@ -685,7 +684,7 @@ pion</I></P>
 			</P>
 		</TD>
 		<TD >
-			<P >DEPLACE C18-C21</P>
+			<P >DEPLACE C18 C21</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
@@ -703,7 +702,7 @@ pion</I></P>
 			</P>
 		</TD>
 		<TD >
-			<P >DEPLACE D0-D4</P>
+			<P >DEPLACE D0 D4</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
@@ -753,7 +752,7 @@ joker</I></P>
 			</P>
 		</TD>
 		<TD >
-			<P >CARTE J</P>
+			<P >POSE J</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
@@ -762,7 +761,7 @@ joker</I></P>
 			</P>
 		</TD>
 		<TD >
-			<P >DEPLACE C0-D0</P>
+			<P >DEPLACE C0 D0</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
@@ -789,7 +788,7 @@ joker</I></P>
 			</P>
 		</TD>
 		<TD >
-			<P >CARTE 2</P>
+			<P >POSE 2</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
@@ -798,7 +797,7 @@ joker</I></P>
 			</P>
 		</TD>
 		<TD >
-			<P >DEPLACE D0-D2</P>
+			<P >DEPLACE D0 D2</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
@@ -848,7 +847,7 @@ de cartes</I></P>
 			</P>
 		</TD>
 		<TD >
-			<P >CARTE 6</P>
+			<P >POSE 6</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
@@ -857,7 +856,7 @@ de cartes</I></P>
 			</P>
 		</TD>
 		<TD >
-			<P >JETTE</P>
+			<P >JETTE 10 D</P>
 		</TD>
 	</TR>
 </TABLE>
@@ -869,9 +868,9 @@ utilisation des fonctions d'aide</I></P>
 </P>
 <P  >Le
 joueur C a un six et un roi.</P>
-<TABLE WIDTH=642 CELLPADDING=4 CELLSPACING=0>
-	<COL WIDTH=322>
-	<COL WIDTH=302>
+<TABLE  CELLPADDING=4 CELLSPACING=0>
+	<COL >
+	<COL >
 	<TR VALIGN=TOP>
 		<TH >
 			<P ALIGN=LEFT>Serveur</P>
@@ -949,7 +948,7 @@ joueur C a un six et un roi.</P>
 	</TR>
 	<TR VALIGN=TOP>
 		<TD >
-			<P  >CARTE
+			<P  >POSE
 			R&nbsp;; SORT</P>
 		</TD>
 		<TD >
@@ -959,8 +958,8 @@ joueur C a un six et un roi.</P>
 	</TR>
 	<TR VALIGN=TOP>
 		<TD >
-			<P  >CARTE
-			R&nbsp;; DEPLACE C2 C15&nbsp;; MANGE A</P>
+			<P  >POSE
+			R&nbsp;; DEPLACE C2 C15&nbsp;; MANGE A C15</P>
 		</TD>
 		<TD >
 			<P ><BR>
@@ -969,7 +968,7 @@ joueur C a un six et un roi.</P>
 	</TR>
 	<TR VALIGN=TOP>
 		<TD >
-			<P  >CARTE
+			<P  >POSE
 			6&nbsp;; DEPLACE C2 C8</P>
 		</TD>
 		<TD >
@@ -992,7 +991,7 @@ joueur C a un six et un roi.</P>
 			</P>
 		</TD>
 		<TD >
-			<P >CARTE R</P>
+			<P >POSE R</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
