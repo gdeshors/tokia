@@ -1014,3 +1014,30 @@ joueur C a un six et un roi.</P>
 	</TR>
 </TABLE>
 
+<h2>6 Aspects techniques</h2>
+
+<p>
+Ce site, le serveur, les IA tournent sur une machine Raspberry Pi :
+
+<img src="http://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/RaspberryPi.jpg/640px-RaspberryPi.jpg" />
+</p>
+
+<p>
+Il s'agit d'un micro-serveur hébergé chez moi qui consomme très peu (4-5W). Il tourne sous Linux (Raspbian).
+Son architecture est ARMv6 32 bits, monocore, et sa puissance est <strong>très faible</strong>&nbsp;!
+Attention à garder cela en tête lors des tests de vos IA, car la limite de 5 secondes permettra peut-être 
+de faire 10 à 100 fois moins d'opérations sur le Raspberry que sur un poste classique.
+</p>
+
+<p>
+En ce qui concerne les programmes à exécuter, bien valider avec moi la disponibilité du langage et la version.
+Les exécutables sont attendus en un seul fichier exécutable, sans aucune dépendance (si ce n'est embarquée).
+</p>
+
+<p>
+La mémoire disponible est relativement limitée aussi : le Raspberry a 515 Mio, partagés entre les 4 ia, le 
+serveur, et aussi le site Ruby on Rails, plus quelques autres sites en PHP et un serveur NGINX. A vue de nez, 
+une IA ne devrait jamais dépasser 60 Mio de mémoire consommée (ce qui laisse quand même de la marge...)
+</p>
+
+
