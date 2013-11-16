@@ -150,13 +150,14 @@ class @Board
 
   mange: (_j, _pos) ->
     pion = if this.manges[_pos] then this.manges[_pos] else this.pions[_pos]
-    if pion.joueur isnt _j then write "ATTENTION BUG #{_j} isnt #{pion.joueur}"
+    if pion.joueur isnt _j then console.log("ATTENTION BUG #{_j} isnt #{pion.joueur}")
     nouvellePos = this.ecurieLibre(_j)
     #sauvegarder le pion !
     pionMangeur = this.pions[_pos]
     pion.moveTo nouvellePos
     this.pions[nouvellePos] = pion
     this.pions[_pos] = pionMangeur
+    this.manges[_pos] = null
 
     
   echange: (_pos1, _pos2) ->
