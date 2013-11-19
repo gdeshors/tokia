@@ -16,6 +16,7 @@ class @Board
     this.paper = Raphael(document.getElementById("board"), 440, 400)
     this.pions = {}
     this.manges = {}
+    this.finis = {}
     this.log = _log
     this.cartes = {A:[], B: [], C: [], D: []}
     
@@ -100,6 +101,24 @@ class @Board
           retour = pos
     return retour
 
+  dernierPionFini: (_j) ->
+    retour = null
+    for i in [-4..-1]
+      do (i) =>
+        pos = _j + i
+        if this.finis[pos]?
+          retour = pos
+    return retour
+
+  ecurieLibrePionFini: (_j) ->
+    retour = null
+    for i in [-1..-4]
+      do (i) =>
+        pos = _j + i
+        if not this.finis[pos]?
+          retour = pos
+    return retour
+
   execute: (args) ->
     #jouer un coup
     #write args
@@ -111,6 +130,7 @@ class @Board
       when 'ECHANGE' then this.echange(args[2], args[3])
       when 'PIOCHE' then @pioche(joueur, args[2])
       when 'POSE' then @pose(joueur, args[2])
+      when 'DONNE' then @donne(joueur, args[2])
       when 'JETTE' then @jette(joueur)
     $("#move").append("<p>"+args.join(" ")+"</p>")
       
@@ -120,19 +140,33 @@ class @Board
     joueur = args[0]
     switch args[1]
       when 'SORT' then this.pions[joueur + "0"].moveTo(this.ecurieLibre(joueur))
-      when 'DEPLACE' then this.pions[args[3]].moveTo(args[2])
+      when 'DEPLACE' then @deplace(args[3], args[2])
       when 'MANGE' then this.pions[this.prochainPion(args[2])].moveTo(args[3])
       when 'ECHANGE' then this.echange(args[2], args[3])
       when 'PIOCHE' then @depioche(joueur, args[2])
       when 'POSE' then @pioche(joueur, args[2])
+      when 'DONNE' then @pioche(joueur, args[2])
+      when 'JETTE' then @recupere(joueur, args[2..])
     $("#move").append("<p>"+args.join(" ")+"</p>")
+
+  deplace: (_from, _to) ->
+    if (_from[1..] == "21")
+      _j = _from[0]
+      # on annule un coup 'termine'
+      @finis[@dernierPionFini(_j)].moveTo(_to)
+    else
+      @pions[_from].moveTo(_to)
 
   pioche: (_j, _carte) ->
     @cartes[_j].push(_carte)
     @majCartes(_j)
-    
+
   pose: (_j, _carte) ->
     @tas.attr("text", _carte)
+    @cartes[_j].remove(_carte)
+    @majCartes(_j)
+    
+  donne: (_j, _carte) ->
     @cartes[_j].remove(_carte)
     @majCartes(_j)
 
@@ -147,6 +181,9 @@ class @Board
   jette: (_j) ->
     @cartes[_j]=[]
     @majCartes(_j)
+
+  recupere: (_j, _cartes) ->
+    @pioche(_j, carte) for carte in _cartes
 
   mange: (_j, _pos) ->
     pion = if this.manges[_pos] then this.manges[_pos] else this.pions[_pos]

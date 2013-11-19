@@ -2,7 +2,7 @@ class @Gamechart
   
   constructor: (_log, _onClick) ->
     
-    Morris.Area({
+    Morris.Line({
       element: 'gamechart',
       data: _log.data,
       xkey: 'n',
@@ -12,7 +12,7 @@ class @Gamechart
       hideHover : true,
       parseTime: false,
       smooth: true,
-      postUnits: " pions",
+      postUnits: " pions en jeu",
       pointSize: 0,
       onClick: _onClick
     })

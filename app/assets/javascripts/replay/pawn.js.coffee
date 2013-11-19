@@ -1,7 +1,10 @@
 class @Pawn
+
   
+
   constructor: (_board, _pos, _j, _bloqueur=false) ->
     @anim = "<>"
+    @center = _board.xy_position('M')
     this.board = _board
     p = this.board.xy_position('M')
     pDest = this.board.xy_position(_pos)
@@ -30,11 +33,20 @@ class @Pawn
 
     
   moveTo: (_pos, _bloqueur=false) ->
+
+    # gestion du cas où on annule un termine
+    if (@slot? and @slot[1] == '-' and @bloqueur)
+      #aller en <j>21
+      @board.finis[@slot] = null
+      @slot = @joueur + "21"
+      @board.pions[@slot] = this
+
+
     @board.pions[this.slot] = null
-    p1 = this.board.xy_position('M')
+    #p1 = this.board.xy_position('M')
     p2 = this.board.xy_position(_pos)
     this.slot = _pos
-    this.svgSet.animate( {transform: "t#{p2[0]-p1[0]},#{p2[1]-p1[1]}"}, 1000, @anim)
+    this.svgSet.animate( {transform: "t#{p2[0]-@center[0]},#{p2[1]-@center[1]}"}, 1000, @anim)
     # FIXME mettre une vraie anim
     if (this.bloqueur)
       this.bloqueur = false
@@ -44,4 +56,18 @@ class @Pawn
       this.bloqueur = true
     this.board.manges[_pos] = this.board.pions[_pos] if this.board.pions[_pos]?
     this.board.pions[_pos] = this
+
+    # gestion du cas où on termine
+    if (_pos[1..] == "21")
+      @board.pions[_pos] = null
+      # rendre bloqueur
+      @bloqueur = true
+      @chapeau.animate( {fill: "#000"}, 1000, @anim)
+      # et aller à l'écurie
+      @slot = @board.ecurieLibrePionFini(@joueur)
+      @board.finis[@slot] = this
+      p3 = this.board.xy_position(@slot)
+      @svgSet.animate( {transform: "t#{p3[0]-@center[0]},#{p3[1]-@center[1]}"}, 3000, "bounce")
+
+
 
