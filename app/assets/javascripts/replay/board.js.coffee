@@ -124,7 +124,7 @@ class @Board
     #write args
     joueur = args[0]
     switch args[1]
-      when 'SORT' then this.pions[this.prochainPion(joueur)].moveTo(joueur + "0", true)
+      when 'SORT' then this.pions[this.prochainPion(args[2])].moveTo(args[2] + "0", true)
       when 'DEPLACE' then this.pions[args[2]].moveTo(args[3])
       when 'MANGE' then this.mange(args[2], args[3])
       when 'ECHANGE' then this.echange(args[2], args[3])
@@ -139,7 +139,7 @@ class @Board
     #write args
     joueur = args[0]
     switch args[1]
-      when 'SORT' then this.pions[joueur + "0"].moveTo(this.ecurieLibre(joueur))
+      when 'SORT' then this.pions[args[2] + "0"].moveTo(this.ecurieLibre(args[2]))
       when 'DEPLACE' then @deplace(args[3], args[2])
       when 'MANGE' then this.pions[this.prochainPion(args[2])].moveTo(args[3])
       when 'ECHANGE' then this.echange(args[2], args[3])
