@@ -103,8 +103,7 @@ Il ne joue donc plus la main (jusqu'à la prochaine donne).</P>
 instances correspondant aux joueurs. Il indique à chaque joueur quel
 est son nom (A à D).</P>
 <P >Le serveur communique avec chaque joueur via un
-socket TCP bidirectionnel.  son entrée standard et écoute ses
-réponses sur sa sortie standard. Il ouvre un socket pour chaque
+socket TCP bidirectionnel. Il ouvre un socket pour chaque
 client et lui fournit le numéro du port associé. Le client au
 démarrage doit se connecter à ce socket et utiliser les flux de
 sortie et d'entrée pour parler au serveur et écouter ses
@@ -223,9 +222,12 @@ FIN</SPAN></P>
 <P  >
 </P>
 <P  ><I>Action </I><SPAN >=
-(SORT | <i>Jette</i> | </SPAN><I>Deplace</I><SPAN >
+(<i>Sort</i> | <i>Jette</i> | </SPAN><I>Deplace</I><SPAN >
 | </SPAN><I>Echange</I><SPAN >), </SPAN><I>Mange</I><SPAN >*,
 </SPAN><I>Termine</I><SPAN >?</SPAN></P>
+<p></p>
+<p><i>Sort</i> = SORT <i>Joueur</i>
+</p>
 <p></p>
 <p><i>Jette</i> = JETTE Carte+
 
@@ -244,11 +246,11 @@ ECHANGE </SPAN><I>Case Case</I></P>
 <P  >
 </P>
 <P  ><I>Mange =
-</I><SPAN >MANGE (A-D) <i>Case</i></SPAN></P>
+</I><SPAN >MANGE (A-D) <i>Joueur</i> <i>Case</i></SPAN></P>
 <P  >
 </P>
 <P  ><I>Termine =
-</I><SPAN >TERMINE
+</I><SPAN >TERMINE  <i>Joueur</i>
 &lt;nombre_pions_terminés_total&gt;</SPAN></P>
 <P  >
 </P>
@@ -256,14 +258,12 @@ ECHANGE </SPAN><I>Case Case</I></P>
 d'aide, questions</B></P>
 <P  >
 </P>
-<P 
 <I>Demande_plateau </I>= PLATEAU</P>
 <P  >
 </P>
-<P 
+<p>
 <I>Demande_possibilités </I>= POSSIBILITES <I>Carte</I>?</P>
-<P 
-
+<p>
 </P>
 <P  ><B>Fonctions
 d'aide, réponses</B></P>
@@ -286,13 +286,12 @@ Description_Joueur, Description_Joueur,  Description_Joueur</I></P>
 
 </P>
 <P 
-<I>Possibilités</I> = <I>Choix</I>+, FIN</P>
+<I>Possibilités</I> = <i>Choix</i> (;<I>Choix</I>)*</P>
 <P 
 
 </P>
 <P 
-<I>Choix </I>= <I>Pose&nbsp;;</I> <I>Action (&nbsp;;
-Action</I>)* 
+<I>Choix</I> = <I>Pose,</I> <I>Action</I>(,<I>Action</I>)* 
 </P>
 <P 
 
@@ -301,7 +300,7 @@ Action</I>)*
 <P  ><BR>
 </P>
 <P  ><I>Echanges, cas
-concrets&nbsp;; le client a <B>cinq secondes pour répondre</B> quand
+concrets&nbsp;; le client a <B>cinq secondes pour répondre - NB. cette durée sera ajustée en fonction de ce que ça permet sur le Raspberry -</B> quand
 c'est son tour.</I></P>
 <P  ><BR>
 </P>
@@ -949,7 +948,7 @@ joueur C a un six et un roi.</P>
 	<TR VALIGN=TOP>
 		<TD >
 			<P  >POSE
-			R&nbsp;; SORT</P>
+			R&nbsp;; SORT C</P>
 		</TD>
 		<TD >
 			<P ><BR>
@@ -1000,7 +999,7 @@ joueur C a un six et un roi.</P>
 			</P>
 		</TD>
 		<TD >
-			<P >SORT</P>
+			<P >SORT C</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
@@ -1035,7 +1034,7 @@ Les exécutables sont attendus en un seul fichier exécutable, sans aucune dépe
 </p>
 
 <p>
-La mémoire disponible est relativement limitée aussi : le Raspberry a 515 Mio, partagés entre les 4 ia, le 
+La mémoire disponible est relativement limitée aussi : le Raspberry a 512 Mio, partagés entre les 4 ia, le 
 serveur, et aussi le site Ruby on Rails, plus quelques autres sites en PHP et un serveur NGINX. A vue de nez, 
 une IA ne devrait jamais dépasser 60 Mio de mémoire consommée (ce qui laisse quand même de la marge...)
 </p>
