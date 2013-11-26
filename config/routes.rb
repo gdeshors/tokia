@@ -1,4 +1,5 @@
 SampleApp::Application.routes.draw do
+  get "engine/run"
   resources :users
   resources :sessions, only: [:new, :create, :destroy]
   resources :matches
