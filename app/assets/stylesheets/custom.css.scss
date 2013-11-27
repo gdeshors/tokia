@@ -49,12 +49,11 @@ h1 {
 }
 
 h2 {
-  font-size: 1.2em;
-  letter-spacing: -1px;
-  margin-bottom: 30px;
-  text-align: center;
-  font-weight: normal;
-  color: $grayLight;
+#  font-size: 1.5em;
+  margin-bottom: 20px;
+#  text-align: center;
+#  font-weight: normal;
+#  color: $grayLight;
 }
 
 p {
@@ -190,4 +189,16 @@ input {
   }
 }
 
+/* Code coloration */
 
+.code {
+  .st0 {
+    color: #33b;
+  }
+  .co3, .co2, .co1, .co0 {
+    color: #292;
+  }
+  .kw1 {
+    color: #904;
+  }
+}

@@ -1,0 +1,271 @@
+<% provide(:title, 'Starter Kit') %>
+<h1>Faire une IA</h1>
+<p>
+Pour faire une IA, voici les choix à effectuer. Tout d'abord il faut se décider sur un langage de programmation. Par exemple je suggère Scala, Java, Ruby, Python,
+mais on doit pouvoir faire des IA en bash, PHP, ou brainfuck... Vérifier juste avec moi la disponibilité du langage et sa version. Ensuite il faut implémenter 
+les aspects techniques et de protocole de discussion. La classe Java présentée ci-dessous pourra servir d'exemple. Ensuite il faut choisir une stratégie : 
+à un coup d'avance ou à plusieurs coups&nbsp;? Dans le premier cas, pas besoin d'implémenter les règles, qui sont complexes, car le serveur peut vous indiquer
+tous les coups possibles avec vos cartes, et aussi l'état du plateau. Il y a sans doute possibilité de prendre une voie intermédiaire en implémentant une partie
+des règles mais en s'assurant chaque fois que le coup qu'on s'apprête à jouer est bien compris dans la liste envoyée par le serveur.
+</p>
+<p>Sur les aspects techniques du développement, il faudra bien tester votre client. Pour cela je mets à disposition le serveur, pour que vous le lanciez en local.
+</p>
+<h1>Le serveur</h1>
+<p>Le serveur est développé en Scala. Il tourne sur une JRE Standard (v1.7) à condition d'avoir dans le classpath les dépendances scala-library et scala-actors. 
+Par ailleurs il nécessite log4j.
+<h2>Fichiers nécessaires</h2>
+<ul>
+  <li>Le serveur : <%= link_to 'lien', download_path(1) %> </li>
+  <li>scala-library : <%= link_to 'lien', download_path(2) %> </li>
+  <li>scala-actors : <%= link_to 'lien', download_path(3) %> </li>
+  <li>log4j : <%= link_to 'lien', download_path(4) %> </li>
+</ul>
+<h2>Lancement</h2>
+</p>
+<p>Le serveur a besoin d'un fichier server.properties qu'on va lui passer en paramètre, et de la présence d'un répertoire logs/ à la racine de l'emplacement de démarrage.</p>
+<p>Le fichier server.properties contient la ligne de commande à exécuter pour chacun des 4 clients A, B, C, D. Il faut respecter la syntaxe suivante:</p>
+<code>
+draw_board=true # pour indiquer si on veut voir défiler dans la console un dessin ascii art du plateau<br>
+A=java -cp lib/* net.deshors.tok.client.StarterKitClient<br>
+B=python monsupaireclient.py<br>
+C=java -cp lib/* net.deshors.tok.client.StarterKitClient<br>
+D=python monsupaireclient.py
+</code>
+<p>Le port http qui doit être le premier paramètre du client sera ajouté automatiquement par le serveur. En passant, on voit ici comment lancer le client
+random mover java, qui est intégré au serveur.</p>
+<p>Pour lancer le serveur, en supposant que l'ensemble de ces jar soient dans lib/, il faut exécuter : <code>java -cp lib/* net.deshors.tok.server.Server server.properties</code> </p>
+<h2>Résultats</h2>
+<p>Le serveur écrit sur sa sortie standard l'avancement du plateau, si on a mis draw_board=true. Par ailleurs, il produit les fichiers suivants&nbsp;:
+<ul>
+  <li>server.log : le log du serveur lui-même, dans lequel on trace toutes les communications avec les clients</li>
+  <li>client_[A-D].log : tout ce que le client produit sur sa sortie standard, intercepté par le serveur</li>
+  <li>client_[A-D].err : tout ce que le client produit sur sa sortie d'erreur</li>
+  <li>game.log : le log de partie destiné à être interprété par le site et tok replay. La partie est complète quand on voit par exemple "A VICTOIRE" à la fin.</li>
+</ul>
+</p>
+<h1>Random mover en Java</h1>
+<p>
+La classe présentée ici est un client complètement fonctionnel, en Java. Elle n'a aucune dépendance. Elle utilise la fonction "POSSIBILITES" du serveur
+qui permet d'indiquer au client tous les coups qu'il peut joueur avec les cartes qu'il a en main. Elle fait ensuite un choix parmi les coups présentés
+avec la stratégie basique qui suit :
+<ul>
+  <li>Si on peut terminer un pion, on le fait</li>
+  <li>Si on peut rentrer un pion dans ses cases de fin, on le fait</li>
+  <li>Si on peut sortir sans manger un de ses propres pions, on le fait - note : y aurait-il un bug sur ce point ?</li>
+  <li>Sinon on choisit un coup au hasard</li>
+</ul>
+<p>
+<p>Ce n'est donc pas un comportement complètement aléatoire, sinon les parties ne finissent jamais. Toutefois des améliorations simples
+permettraient des améliorations drastiques sur le résultat. Par exemple, ce random mover a sans doute un bug sur la règle numéro 3, 
+mal appliquée : quand il joue contre le random mover Scala, qui n'a pas ce bug, il perd quasi systématiquement. La stratégie a donc
+une importance forte pour améliorer un joueur qui part d'aussi loin.
+</p>
+<p>Je vous invite à récupérer ce code et à l'améliorer, directement ou en le transposant dans le langage de votre choix, pour 
+implémenter une IA un peu plus intelligente qu'un choix de coup aléatoire...</p>
+
+<pre class="code java"><span class="kw1">package</span> <span class="co2">net.deshors.tok.client</span><span class="sy0">;</span>
+&nbsp;
+<span class="kw1">import</span> <span class="co2">java.io.BufferedReader</span><span class="sy0">;</span>
+<span class="kw1">import</span> <span class="co2">java.io.DataOutputStream</span><span class="sy0">;</span>
+<span class="kw1">import</span> <span class="co2">java.io.IOException</span><span class="sy0">;</span>
+<span class="kw1">import</span> <span class="co2">java.io.InputStreamReader</span><span class="sy0">;</span>
+<span class="kw1">import</span> <span class="co2">java.net.Socket</span><span class="sy0">;</span>
+<span class="kw1">import</span> <span class="co2">java.util.ArrayList</span><span class="sy0">;</span>
+<span class="kw1">import</span> <span class="co2">java.util.Arrays</span><span class="sy0">;</span>
+<span class="kw1">import</span> <span class="co2">java.util.Collections</span><span class="sy0">;</span>
+<span class="kw1">import</span> <span class="co2">java.util.List</span><span class="sy0">;</span>
+&nbsp;
+<span class="kw1">public</span> <span class="kw1">class</span> StarterKitClient <span class="br0">&#123;</span>
+&nbsp;
+	<span class="kw1">private</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a> joueur<span class="sy0">;</span> <span class="co1">// notre lettre de joueur : A-D</span>
+	<span class="kw1">private</span> <span class="kw4">int</span> port<span class="sy0">;</span>
+&nbsp;
+	<span class="kw1">private</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+socket"><span class="kw3">Socket</span></a> clientSocket <span class="sy0">=</span> <span class="kw2">null</span><span class="sy0">;</span>
+	<span class="kw1">private</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+dataoutputstream"><span class="kw3">DataOutputStream</span></a> outToServer <span class="sy0">=</span> <span class="kw2">null</span><span class="sy0">;</span>
+	<span class="kw1">private</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+bufferedreader"><span class="kw3">BufferedReader</span></a> inFromServer <span class="sy0">=</span> <span class="kw2">null</span><span class="sy0">;</span>
+&nbsp;
+	<span class="kw1">private</span> <span class="kw4">boolean</span> modeNouvelleMain <span class="sy0">=</span> <span class="kw2">false</span><span class="sy0">;</span>
+	<span class="kw1">private</span> List<span class="sy0">&lt;</span>String<span class="sy0">&gt;</span> cartes <span class="sy0">=</span> <span class="kw1">new</span> ArrayList<span class="sy0">&lt;</span>String<span class="sy0">&gt;</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+	<span class="co3">/**
+	 * @param args
+	 * @throws IOException
+	 */</span>
+	<span class="kw1">public</span> <span class="kw1">static</span> <span class="kw4">void</span> main<span class="br0">&#40;</span><a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a><span class="br0">&#91;</span><span class="br0">&#93;</span> args<span class="br0">&#41;</span> <span class="kw1">throws</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+ioexception"><span class="kw3">IOException</span></a> <span class="br0">&#123;</span>
+		<a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a> port <span class="sy0">=</span> args<span class="br0">&#91;</span><span class="nu0">0</span><span class="br0">&#93;</span><span class="sy0">;</span>
+		<span class="kw1">new</span> StarterKitClient<span class="br0">&#40;</span>port<span class="br0">&#41;</span>.<span class="me1">demarrer</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+	<span class="br0">&#125;</span>
+&nbsp;
+	<span class="kw1">public</span> StarterKitClient<span class="br0">&#40;</span><a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a> _port<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+		port <span class="sy0">=</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+integer"><span class="kw3">Integer</span></a>.<span class="me1">valueOf</span><span class="br0">&#40;</span>_port<span class="br0">&#41;</span><span class="sy0">;</span>
+	<span class="br0">&#125;</span>
+&nbsp;
+	<span class="co3">/**
+	 * boucle infinie du jeu
+	 * 
+	 * @throws IOException
+	 */</span>
+	<span class="kw1">private</span> <span class="kw4">void</span> demarrer<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="kw1">throws</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+ioexception"><span class="kw3">IOException</span></a> <span class="br0">&#123;</span>
+		<span class="co1">// ouvrir le socket sur le port passé</span>
+		clientSocket <span class="sy0">=</span> <span class="kw1">new</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+socket"><span class="kw3">Socket</span></a><span class="br0">&#40;</span><span class="st0">&quot;localhost&quot;</span>, port<span class="br0">&#41;</span><span class="sy0">;</span>
+		outToServer <span class="sy0">=</span> <span class="kw1">new</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+dataoutputstream"><span class="kw3">DataOutputStream</span></a><span class="br0">&#40;</span>clientSocket.<span class="me1">getOutputStream</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+		inFromServer <span class="sy0">=</span> <span class="kw1">new</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+bufferedreader"><span class="kw3">BufferedReader</span></a><span class="br0">&#40;</span><span class="kw1">new</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+inputstreamreader"><span class="kw3">InputStreamReader</span></a><span class="br0">&#40;</span>clientSocket.<span class="me1">getInputStream</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+		<span class="co1">// attendre l'identification (A-D)</span>
+		<span class="co1">// attendre &quot;JOUEUR X&quot; où X est notre nom de joueur</span>
+		<span class="co1">// à chaque tour, demander les possibilités et en jouer une</span>
+		<span class="kw1">while</span> <span class="br0">&#40;</span><span class="kw2">true</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+			attendreServeur<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+		<span class="br0">&#125;</span>
+	<span class="br0">&#125;</span>
+&nbsp;
+	<span class="co3">/**
+	 * Phase d'attente du serveur
+	 * 
+	 * @throws IOException
+	 */</span>
+	<span class="kw1">private</span> <span class="kw4">void</span> attendreServeur<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="kw1">throws</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+ioexception"><span class="kw3">IOException</span></a> <span class="br0">&#123;</span>
+		<span class="co1">// appel bloquant à readLine</span>
+		<a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a> commande <span class="sy0">=</span> readFromServer<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+		<span class="co1">// switch selon la commande</span>
+		<span class="kw1">if</span> <span class="br0">&#40;</span>commande.<span class="me1">equals</span><span class="br0">&#40;</span><span class="st0">&quot;VICTOIRE&quot;</span><span class="br0">&#41;</span> <span class="sy0">||</span> commande.<span class="me1">equals</span><span class="br0">&#40;</span><span class="st0">&quot;DEFAITE&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+			fin<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+		<span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span>commande.<span class="me1">startsWith</span><span class="br0">&#40;</span><span class="st0">&quot;BIENVENUE&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+			<span class="co1">// dernière lettre</span>
+			bienvenue<span class="br0">&#40;</span>commande.<span class="me1">substring</span><span class="br0">&#40;</span>commande.<span class="me1">length</span><span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="sy0">-</span> <span class="nu0">1</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+		<span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span>commande.<span class="me1">equals</span><span class="br0">&#40;</span><span class="st0">&quot;NOUVELLE_MAIN&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+			<span class="co1">// se préparer à retenir les cartes, pour en donner une</span>
+			modeNouvelleMain <span class="sy0">=</span> <span class="kw2">true</span><span class="sy0">;</span>
+			cartes.<span class="me1">clear</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+		<span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span>commande.<span class="me1">startsWith</span><span class="br0">&#40;</span><span class="st0">&quot;PIOCHE&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+			<span class="co1">// retenir les cartes</span>
+			cartes.<span class="me1">add</span><span class="br0">&#40;</span>commande.<span class="me1">split</span><span class="br0">&#40;</span><span class="st0">&quot; &quot;</span><span class="br0">&#41;</span><span class="br0">&#91;</span><span class="nu0">1</span><span class="br0">&#93;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+		<span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span>commande.<span class="me1">equals</span><span class="br0">&#40;</span><span class="st0">&quot;FIN&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+			<span class="kw1">if</span> <span class="br0">&#40;</span>modeNouvelleMain<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+				<span class="co1">// donner une carte</span>
+				modeNouvelleMain <span class="sy0">=</span> <span class="kw2">false</span><span class="sy0">;</span>
+				<span class="co1">// renvoyer une carte au hasard</span>
+				<a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+collections"><span class="kw3">Collections</span></a>.<span class="me1">shuffle</span><span class="br0">&#40;</span>cartes<span class="br0">&#41;</span><span class="sy0">;</span>
+				envoyer<span class="br0">&#40;</span><span class="st0">&quot;DONNE &quot;</span> <span class="sy0">+</span> cartes.<span class="me1">get</span><span class="br0">&#40;</span><span class="nu0">0</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+			<span class="br0">&#125;</span>
+		<span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span>commande.<span class="me1">startsWith</span><span class="br0">&#40;</span><span class="st0">&quot;JOUEUR&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+			<span class="co1">// dernière lettre</span>
+			<a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a> joueurTour <span class="sy0">=</span> commande.<span class="me1">substring</span><span class="br0">&#40;</span>commande.<span class="me1">length</span><span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="sy0">-</span> <span class="nu0">1</span><span class="br0">&#41;</span><span class="sy0">;</span>
+			<span class="kw1">if</span> <span class="br0">&#40;</span>joueurTour.<span class="me1">equals</span><span class="br0">&#40;</span>joueur<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+				jouer<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+			<span class="br0">&#125;</span>
+		<span class="br0">&#125;</span>
+		<span class="co1">// sinon : on ne comprend pas la commande, ne rien faire</span>
+	<span class="br0">&#125;</span>
+&nbsp;
+	<span class="co3">/**
+	 * Message de bienvenue
+	 * 
+	 * @param lettre
+	 * @throws IOException
+	 */</span>
+	<span class="kw1">public</span> <span class="kw4">void</span> bienvenue<span class="br0">&#40;</span><a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a> lettre<span class="br0">&#41;</span> <span class="kw1">throws</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+ioexception"><span class="kw3">IOException</span></a> <span class="br0">&#123;</span>
+		joueur <span class="sy0">=</span> lettre<span class="sy0">;</span>
+		<span class="co1">// renvoyer notre nom</span>
+		envoyer<span class="br0">&#40;</span><span class="st0">&quot;IDENTIFICATION RandomTok&quot;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+	<span class="br0">&#125;</span>
+&nbsp;
+	<span class="co3">/**
+	 * Victoire ou défaite : terminer
+	 * 
+	 * @throws IOException
+	 */</span>
+	<span class="kw1">private</span> <span class="kw4">void</span> fin<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="kw1">throws</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+ioexception"><span class="kw3">IOException</span></a> <span class="br0">&#123;</span>
+		<span class="kw1">try</span> <span class="br0">&#123;</span>
+			outToServer.<span class="me1">close</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+			inFromServer.<span class="me1">close</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+			clientSocket.<span class="me1">close</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+		<span class="br0">&#125;</span> <span class="kw1">catch</span> <span class="br0">&#40;</span><a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+exception"><span class="kw3">Exception</span></a> e<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+			e.<span class="me1">printStackTrace</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+		<span class="br0">&#125;</span>
+		<a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+system"><span class="kw3">System</span></a>.<span class="me1">exit</span><span class="br0">&#40;</span><span class="nu0">0</span><span class="br0">&#41;</span><span class="sy0">;</span>
+	<span class="br0">&#125;</span>
+&nbsp;
+	<span class="kw1">private</span> <span class="kw4">void</span> jouer<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="kw1">throws</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+ioexception"><span class="kw3">IOException</span></a> <span class="br0">&#123;</span>
+		<span class="co1">// simplement demander les possibilités</span>
+		envoyer<span class="br0">&#40;</span><span class="st0">&quot;POSSIBILITES&quot;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+		<span class="co1">// attendre les possibilités</span>
+		<a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a> commande <span class="sy0">=</span> readFromServer<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+		<span class="co1">// parser la réponse</span>
+		<a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a><span class="br0">&#91;</span><span class="br0">&#93;</span> coups <span class="sy0">=</span> commande.<span class="me1">split</span><span class="br0">&#40;</span><span class="st0">&quot;;&quot;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+		envoyerCommandes<span class="br0">&#40;</span>choisirCoup<span class="br0">&#40;</span>coups<span class="br0">&#41;</span>.<span class="me1">split</span><span class="br0">&#40;</span><span class="st0">&quot;,&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+		envoyer<span class="br0">&#40;</span><span class="st0">&quot;FIN&quot;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+	<span class="br0">&#125;</span>
+&nbsp;
+	<span class="kw1">private</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a> readFromServer<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="kw1">throws</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+ioexception"><span class="kw3">IOException</span></a> <span class="br0">&#123;</span>
+		<a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a> commande <span class="sy0">=</span> inFromServer.<span class="me1">readLine</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+		<a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+system"><span class="kw3">System</span></a>.<span class="me1">out</span>.<span class="me1">println</span><span class="br0">&#40;</span><span class="st0">&quot;reçu du serveur : &quot;</span> <span class="sy0">+</span> commande<span class="br0">&#41;</span><span class="sy0">;</span>
+		<span class="kw1">return</span> commande<span class="sy0">;</span>
+	<span class="br0">&#125;</span>
+&nbsp;
+	<span class="co3">/**
+	 * Choisir un coup et renvoyer ses commandes
+	 * 
+	 * Hint : s'il y a une méthode à améliorer, c'est celle-ci :)
+	 * 
+	 * @param coups
+	 * @return
+	 */</span>
+	<span class="kw1">public</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a> choisirCoup<span class="br0">&#40;</span><a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a><span class="br0">&#91;</span><span class="br0">&#93;</span> coups<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+		<span class="co1">// privilégier dans l'ordre :</span>
+		<span class="co1">// * les coups qui font terminer un pion !</span>
+		<span class="co1">// * les coups qui font rentrer dans une case &gt;= 18</span>
+		<span class="co1">// * les coups qui permettent de sortir (sans s'auto-manger)</span>
+		<span class="co1">// * ensuite choisir aléatoirement</span>
+&nbsp;
+		<span class="kw1">for</span> <span class="br0">&#40;</span><a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a> coup <span class="sy0">:</span> coups<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+			<span class="kw1">if</span> <span class="br0">&#40;</span>coup.<span class="me1">contains</span><span class="br0">&#40;</span><span class="st0">&quot;TERMINE&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+				<span class="kw1">return</span> coup<span class="sy0">;</span>
+			<span class="br0">&#125;</span>
+		<span class="br0">&#125;</span>
+		<span class="kw1">for</span> <span class="br0">&#40;</span><a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a> coup <span class="sy0">:</span> coups<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+			<span class="kw1">if</span> <span class="br0">&#40;</span>coup.<span class="me1">matches</span><span class="br0">&#40;</span><span class="st0">&quot;.*DEPLACE <span class="es0">\\</span>w+ &quot;</span> <span class="sy0">+</span> joueur <span class="sy0">+</span> <span class="st0">&quot;[(1[8|9])|(2[0|1])].*&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+				<span class="kw1">return</span> coup<span class="sy0">;</span>
+			<span class="br0">&#125;</span>
+		<span class="br0">&#125;</span>
+		<span class="kw1">for</span> <span class="br0">&#40;</span><a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a> coup <span class="sy0">:</span> coups<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+			<span class="kw1">if</span> <span class="br0">&#40;</span>coup.<span class="me1">contains</span><span class="br0">&#40;</span><span class="st0">&quot;SORT&quot;</span><span class="br0">&#41;</span> <span class="sy0">&amp;&amp;</span> <span class="sy0">!</span>coup.<span class="me1">contains</span><span class="br0">&#40;</span><span class="st0">&quot;MANGE &quot;</span> <span class="sy0">+</span> joueur<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+				<span class="kw1">return</span> coup<span class="sy0">;</span>
+			<span class="br0">&#125;</span>
+		<span class="br0">&#125;</span>
+		<span class="co1">// ensuite : un coup aléatoire</span>
+		List<span class="sy0">&lt;</span>String<span class="sy0">&gt;</span> coupsList <span class="sy0">=</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+arrays"><span class="kw3">Arrays</span></a>.<span class="me1">asList</span><span class="br0">&#40;</span>coups<span class="br0">&#41;</span><span class="sy0">;</span>
+		<a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+collections"><span class="kw3">Collections</span></a>.<span class="me1">shuffle</span><span class="br0">&#40;</span>coupsList<span class="br0">&#41;</span><span class="sy0">;</span>
+		<span class="kw1">return</span> coupsList.<span class="me1">get</span><span class="br0">&#40;</span><span class="nu0">0</span><span class="br0">&#41;</span><span class="sy0">;</span>
+	<span class="br0">&#125;</span>
+&nbsp;
+	<span class="kw1">public</span> <span class="kw4">void</span> setJoueur<span class="br0">&#40;</span><a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a> joueur<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+		<span class="kw1">this</span>.<span class="me1">joueur</span> <span class="sy0">=</span> joueur<span class="sy0">;</span>
+	<span class="br0">&#125;</span>
+&nbsp;
+	<span class="co3">/**
+	 * Envoyer toutes les commandes dans l'ordre
+	 * 
+	 * @param choisirCoup
+	 * @throws IOException
+	 */</span>
+	<span class="kw1">private</span> <span class="kw4">void</span> envoyerCommandes<span class="br0">&#40;</span><a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a><span class="br0">&#91;</span><span class="br0">&#93;</span> commandes<span class="br0">&#41;</span> <span class="kw1">throws</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+ioexception"><span class="kw3">IOException</span></a> <span class="br0">&#123;</span>
+		<span class="kw1">for</span> <span class="br0">&#40;</span><a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a> commande <span class="sy0">:</span> commandes<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+			envoyer<span class="br0">&#40;</span>commande<span class="br0">&#41;</span><span class="sy0">;</span>
+		<span class="br0">&#125;</span>
+	<span class="br0">&#125;</span>
+&nbsp;
+	<span class="co3">/**
+	 * Envoyer la commande au serveur
+	 * 
+	 * @param commande
+	 * @throws IOException
+	 */</span>
+	<span class="kw1">private</span> <span class="kw4">void</span> envoyer<span class="br0">&#40;</span><a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+string"><span class="kw3">String</span></a> commande<span class="br0">&#41;</span> <span class="kw1">throws</span> <a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+ioexception"><span class="kw3">IOException</span></a> <span class="br0">&#123;</span>
+		outToServer.<span class="me1">writeBytes</span><span class="br0">&#40;</span>commande <span class="sy0">+</span> <span class="st0">'<span class="es0">\n</span>'</span><span class="br0">&#41;</span><span class="sy0">;</span>
+		<a href="http://www.google.com/search?hl=en&amp;q=allinurl%3Adocs.oracle.com+javase+docs+api+system"><span class="kw3">System</span></a>.<span class="me1">out</span>.<span class="me1">println</span><span class="br0">&#40;</span><span class="st0">&quot;envoyé au serveur : &quot;</span> <span class="sy0">+</span> commande<span class="br0">&#41;</span><span class="sy0">;</span>
+	<span class="br0">&#125;</span>
+<span class="br0">&#125;</span></pre>
+
+
+

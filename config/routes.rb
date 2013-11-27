@@ -7,6 +7,8 @@ SampleApp::Application.routes.draw do
   match '/contact', to: 'static_pages#contact', via: 'get'
   match '/rules',   to: 'static_pages#rules',   via: 'get'
   match '/about',   to: 'static_pages#about',   via: 'get'
+  match '/starterkit', to: 'static_pages#starterkit', via: 'get'
+  match '/download/:id', to: 'static_pages#download', via: 'get', as: 'download'
   match '/signup',  to: 'users#new',            via: 'get'
   match '/signin',  to: 'sessions#new',         via: 'get'
   match '/signout', to: 'sessions#destroy',     via: 'delete'

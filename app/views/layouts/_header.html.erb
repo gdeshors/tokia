@@ -6,6 +6,7 @@
         <ul class="nav pull-right">
           <li><%= link_to "Accueil", root_path %></li>
           <li><%= link_to "Règles", rules_path %></li>
+          <li><%= link_to "Starter Kit", starterkit_path %></li>
           <% if signed_in? %>
             <li><%= link_to "Concurrents", users_path %></li>
             <li id="fat-menu" class="dropdown">
