@@ -18,5 +18,5 @@ user2 = User.create(name:"Toto", email:"b@b.com", password: "bbbbbb", password_c
 ai2 = Ai.create(name:"devastée", active: true, elo: 1500, version: "1.0", user: user2)
 
 
-Match.create(ai_1: ai1, ai_2: ai2, winner1: ai1, winner2: ai1, winner: ai1, log1:"A SORT\nA FIN\nB SORT\nB FIN\nA DEPLACE A0 B2\nA FIN\nB DEPLACE B0 B2\nB MANGE A B2\nB FIN")
+#Match.create(ai_1: ai1, ai_2: ai2, winner1: ai1, winner2: ai1, winner: ai1, log1:"A SORT\nA FIN\nB SORT\nB FIN\nA DEPLACE A0 B2\nA FIN\nB DEPLACE B0 B2\nB MANGE A B2\nB FIN")
 
