@@ -9,4 +9,17 @@ class Ai < ActiveRecord::Base
       Match.where("ai_1_id = ? OR ai_2_id = ?", id, id)
   end
 
+  def expected_outcome(elo2)
+    1.0/(1 + 10**((elo2 - self.elo)/400.0))
+  end
+
+  def calculate_new_elo(victory, elo2)
+    score = if victory
+      1
+    else
+      0
+    end
+    (self.elo + 30*(score - expected_outcome(elo2))).round
+  end
+
 end
