@@ -8,3 +8,10 @@
 </ul>
 
 <%= will_paginate %>
+
+<script>
+  ykeys = <%= raw @ykeys.to_json %>;
+  labels = <%= raw @labels.to_json %>;
+</script>
+
+<div id="elograph"></div>

@@ -5,6 +5,17 @@ class UsersController < ApplicationController
 
   def index
     @users = User.paginate(page: params[:page])
+    @ykeys = []
+    @labels = []
+    Ai.all.each do |ai|
+     @ykeys.push(ai.id.to_s) 
+     @labels.push(ai.name)
+    end
+
+  end
+
+  def test
+    render json: {a: "coucou"}
   end
 
   def new
