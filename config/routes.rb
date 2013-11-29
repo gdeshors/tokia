@@ -3,6 +3,7 @@ SampleApp::Application.routes.draw do
   resources :users
   resources :sessions, only: [:new, :create, :destroy]
   resources :matches
+  resources :games
   root  'static_pages#home'
   match '/contact', to: 'static_pages#contact', via: 'get'
   match '/rules',   to: 'static_pages#rules',   via: 'get'

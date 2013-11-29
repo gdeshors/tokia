@@ -1,0 +1,14 @@
+<li>
+  <p>
+  <%= game.ai_1.name %> contre <%= game.ai_2.name %>
+  </p>
+  <%= game.created_at %> 
+  <p>
+  <% if @ai == game.winner %>
+  Victoire !
+  <% end %>
+  <%= link_to "Replay", game %>
+  </p>
+
+
+</li>

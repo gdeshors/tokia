@@ -1,0 +1,67 @@
+<% provide(:title, 'Tok Replay') %>
+
+
+<%= render @game %>
+
+<input type="button" value="Prev" id="btnPrev"  onclick="plateau.prev();"/> 
+    <span id='courante'></span>/<span id='total'></span>  
+<input type="button" value="Next" id="btnNext"  onclick="plateau.next();"/> 
+
+<input id="log" type="hidden" value="<%= @game.gamelog %>"></input>
+
+<div id="move"></div>
+
+<div id="board"></div>
+  
+<div id="gamechart"></div>
+<div id="gamechart2"></div>
+  
+<script>
+  $(function() {
+    console.log( 'ready!' );
+    log = new Log($("#log").attr("value"));
+    new Gamechart(log, function (i) {plateau.gotoMove(i)});
+    plateau = new Board(log);
+    plateau.init();
+    console.log("ok");
+  });
+
+  function leftArrowPressed() {
+    plateau.prev();
+  }
+
+  function rightArrowPressed() {
+    plateau.next();
+  }
+  function upArrowPressed() {
+    for(var i=0; i<10; i++) {
+      plateau.next();
+    }
+  }
+  function downArrowPressed() {
+    for(var i=0; i<10; i++) {
+      plateau.prev();
+    }
+  }
+
+  document.onkeydown = function(evt) {
+    evt = evt || window.event; /* There are four evt.keyCodes: 37 --> left; 38 --> up; 39 --> right;  40 --> down. */
+    switch (evt.keyCode) {
+      case 37:
+      leftArrowPressed();
+      break;
+      case 39:
+      rightArrowPressed();
+      break;
+      case 38:
+      upArrowPressed();
+      break;
+      case 40:
+      downArrowPressed();
+      break;
+    }
+  };
+</script>
+
+
+

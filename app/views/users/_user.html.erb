@@ -5,4 +5,9 @@
     | <%= link_to "delete", user, method: :delete,
                                   data: { confirm: "You sure?" } %>
   <% end %>
+  <p>IA : 
+  <% ia = user.ais.first %>
+  <%= ia.name %>, classement = 
+  <%= ia.elo %>
+  </p>
 </li>
