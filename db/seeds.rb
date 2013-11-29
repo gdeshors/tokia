@@ -7,16 +7,23 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 
-user1 = User.create(name:"Guillaume", email:"a@a.com", password: "aaaaaa", password_confirmation: "aaaaaa")
+user1 = User.create(name:"Demo1", email:"a@a.com", password: "aaaaaa", password_confirmation: "aaaaaa")
 
-ai1 = Ai.create(name:"devastatok", active: true, elo: 1500, version: "1.0", user: user1)
+ai1 = Ai.create(name:"Java RM", active: true, elo: 1500, version: "1.0", user: user1,
+command_line: "java -cp env/scala_2.10.3/*:server/* net.deshors.tok.client.StarterKitClient" )
 
 
 
-user2 = User.create(name:"Toto", email:"b@b.com", password: "bbbbbb", password_confirmation: "bbbbbb")
+user2 = User.create(name:"Demo2", email:"b@b.com", password: "bbbbbb", password_confirmation: "bbbbbb")
 
-ai2 = Ai.create(name:"devastée", active: true, elo: 1500, version: "1.0", user: user2)
+ai2 = Ai.create(name:"Scala RM", active: true, elo: 1500, version: "1.0", user: user2)
 
+
+user3 = User.create(name:"Demo3", email:"c@c.com", password: "bbbbbb", password_confirmation: "bbbbbb")
+
+ai2 = Ai.create(name:"Scala RM2", active: true, elo: 1500, version: "1.0", user: user3,
+command_line: "java -cp env/scala_2.10.3/*:server/* net.deshors.tok.client.Client"
+)
 
 #Match.create(ai_1: ai1, ai_2: ai2, winner1: ai1, winner2: ai1, winner: ai1, log1:"A SORT\nA FIN\nB SORT\nB FIN\nA DEPLACE A0 B2\nA FIN\nB DEPLACE B0 B2\nB MANGE A B2\nB FIN")
 
