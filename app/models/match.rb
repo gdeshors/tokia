@@ -4,6 +4,8 @@ class Match < ActiveRecord::Base
   belongs_to :ai_2, :class_name => 'Ai'
   belongs_to :winner, :class_name => 'Ai'
 
+  has_many :games
+
   validates :ai_1, presence: true
   validates :ai_2, presence: true
   
