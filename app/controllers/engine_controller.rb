@@ -39,10 +39,10 @@ class EngineController < ApplicationController
               @game.gamelog = get_file_as_string(gamelog)
               winner = find_victorious_team(gamelog)
               if winner == "A"
-                @game.winner_id = 1
+                @game.winner = @game.ai_1
               end
               if winner == "B"
-                @game.winner_id = 2
+                @game.winner = @game.ai_2
               end
               @game.save
 
@@ -104,10 +104,12 @@ class EngineController < ApplicationController
 
   def start_new_game
 
+     # choisir les deux IA à lancer (au hasard)
+    ais = Ai.where(active:true).sample(2)
     if  PendingGame.first == nil
       m = Match.new
-      m.ai_1_id = 1
-      m.ai_2_id = 2
+      m.ai_1 = ais[0]
+      m.ai_2 = ais[1]
       m.save
       g = Game.new
       g.ai_1 = m.ai_1
@@ -118,8 +120,17 @@ class EngineController < ApplicationController
       pg.game = g
       pg.save
     end
+     # écrire le fichier properties de lancement
+    open("/home/tokserver/server.properties", "w") do |f|
+      f.puts "sudo_prefix=sudo su tokclient -c" 
+      f.puts "chdir=/home/tokserver"
+      f.puts "A=#{ais[0].command_line}"
+      f.puts "B=#{ais[1].command_line}"
+      f.puts "C=#{ais[0].command_line}"
+      f.puts "D=#{ais[1].command_line}"
+    end
     # write command
-    java = "java -cp server/*:env/scala_2.10.3/* net.deshors.tok.server.Server serverSite.properties"
+    java = "java -cp server/*:env/scala_2.10.3/* net.deshors.tok.server.Server server.properties"
     command = "sudo su tokserver -c '#{java}'"
     pid = Process.spawn(command, :chdir=>'/home/tokserver', :out=>"/home/tokserver/server.out", :err=>"/home/tokserver/server.err")
     open('/home/tokserver/server.pid', 'w') { |f|
