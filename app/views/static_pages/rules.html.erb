@@ -1,6 +1,6 @@
   <% provide(:title, 'Règles') %>
 <h1>Les règles</h1>
-<p>Version 1.4 - 30/10/13</p>
+<p>Version 1.5 - 30/10/13</p>
 
 <P  ><I>Historique
 des versions</I></P>
@@ -21,9 +21,8 @@ un tiret mais un espace entre les cases ; MANGE indique la case du pion mangé ;
 </p>
 <p>1.5 (en cours) 26/11/13 : TERMINE et SORT indiquent le joueur possédant les pions concernés
 (pour éviter les ambiguités lorsqu'un joueur joue avec les pions de son partenaire)
-+ petites corrections</p>
++ petites corrections + passage du timeout à 10 secondes à cause de la lenteur du Raspberry</p>
 <P  ><BR>
-
 
 
 <P  ><BR>
@@ -120,7 +119,7 @@ immédiate.</P>
 <P >Lorsque c'est le tour d'un joueur de parler, il
 dispose d'un délai de réponse maximum. Une absence de réponse dans
 ce délai entraîne la défaite. Le délai pourra être réglable&nbsp;;
-en première approche on envisagera cinq secondes.</P>
+la valeur en cours actuellement est de <strong>10 secondes</strong></P>
 <P >Le concours n'impose aucune règle sur les langages
 de programmation à utiliser pour faire les clients et les
 participants sont invités à être inventifs et à profiter de
@@ -303,7 +302,7 @@ Description_Joueur, Description_Joueur,  Description_Joueur</I></P>
 <P  ><BR>
 </P>
 <P  ><I>Echanges, cas
-concrets&nbsp;; le client a <B>cinq secondes pour répondre - NB. cette durée sera ajustée en fonction de ce que ça permet sur le Raspberry -</B> quand
+concrets&nbsp;; le client a <B>dix secondes pour répondre - NB. cette durée sera ajustée en fonction de ce que ça permet sur le Raspberry -</B> quand
 c'est son tour.</I></P>
 <P  ><BR>
 </P>
@@ -567,8 +566,8 @@ que les deux ont donné leur carte.</P>
 </P>
 <P  >Le
 serveur recopie pour tous les actions faites par chaque joueur, au
-fur et à mesure. Les cinq secondes de temps de réponse sont
-comptées jusqu'au mot-clé FIN qui est obligatoire. En cas de
+fur et à mesure. Le temps de réponse est
+compté jusqu'au mot-clé FIN qui est obligatoire. En cas de
 dépassement, c'est une défaite.</P>
 <P  ><BR>
 </P>
@@ -815,7 +814,7 @@ joker</I></P>
 <P  ><BR>
 </P>
 <P  >Avec
-un joker, le temps de 5 secondes est réinitialisé lors de la
+un joker, le temps de réponse est réinitialisé lors de la
 pioche.</P>
 <P  ><BR>
 </P>
@@ -1027,7 +1026,7 @@ Ce site, le serveur, les IA tournent sur une machine Raspberry Pi :
 <p>
 Il s'agit d'un micro-serveur hébergé chez moi qui consomme très peu (4-5W). Il tourne sous Linux (Raspbian).
 Son architecture est ARMv6 32 bits, monocore, et sa puissance est <strong>très faible</strong>&nbsp;!
-Attention à garder cela en tête lors des tests de vos IA, car la limite de 5 secondes permettra peut-être 
+Attention à garder cela en tête lors des tests de vos IA, car la limite de 10 secondes permettra peut-être 
 de faire 10 à 100 fois moins d'opérations sur le Raspberry que sur un poste classique.
 </p>
 
