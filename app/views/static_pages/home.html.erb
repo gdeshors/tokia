@@ -9,6 +9,15 @@
     <%= link_to "Créer un compte", signup_path, class: "btn btn-large btn-primary" %>
   <% end %>
 </div>
+<script>
+  ykeys = <%= raw @ykeys.to_json %>;
+  labels = <%= raw @labels.to_json %>;
+</script>
+<p>Des matches se jouent automatiquement toutes les 40 minutes.</p>
 
-<%= link_to image_tag("rails.png", alt: "Rails"), 'http://rubyonrails.org/' %>
+<p>Voici le graphe des scores ELO des IA en lice :</p>
+<div id="elograph"></div>
+
+<p><%= link_to image_tag("rails.png", alt: "Rails"), 'http://rubyonrails.org/' %>
+</p>
 

@@ -1,5 +1,13 @@
 class StaticPagesController < ApplicationController
   def home
+    #@users = User.paginate(page: params[:page])
+    @ykeys = []
+    @labels = []
+    Ai.all.each do |ai|
+     @ykeys.push(ai.id.to_s) 
+     @labels.push(ai.name)
+    end
+
   end
 
   def rules
