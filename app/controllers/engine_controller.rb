@@ -105,7 +105,11 @@ class EngineController < ApplicationController
   def start_new_game
 
      # choisir les deux IA à lancer (au hasard)
-    ais = Ai.where(active:true).sample(2)
+    activeAis = Ai.where(active:true)
+    diff = 0
+    ais = activeAis.sample(2)
+    ais = activeAis.sample(2) until (ais[0].elo - ais[1].elo).abs < (diff += 100)
+
     if  PendingGame.first == nil
       m = Match.new
       m.ai_1 = ais[0]

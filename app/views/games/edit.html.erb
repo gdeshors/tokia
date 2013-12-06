@@ -1,16 +1,14 @@
-<% provide(:title, "Edit match log") %>
+<% provide(:title, "Edit game log") %>
 <h1>mise à jour de log</h1>
 
 <div class="row">
   <div class="span6 offset3">
-    <%= form_for(@match) do |f| %>
+    <%= form_for(@game) do |f| %>
       <%= render 'shared/error_messages' %>
 
-      <%= f.label :log1 %>
-      <%= f.text_area :log1 %>
+      <%= f.label :gamelog %>
+      <%= f.text_area :gamelog %>
 
-      <%= f.label :log2 %>
-      <%= f.text_field :log2 %>
 
       <%= f.submit "Save changes", class: "btn btn-large btn-primary" %>
     <% end %>
