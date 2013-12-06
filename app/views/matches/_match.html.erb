@@ -8,6 +8,14 @@
   Victoire !
   <% end %>
   <%= link_to "Replay", match.games.first %>
+  <%= link_to "server.log", viewlog_url(match.games.first.id, "server") %>
+  <%= link_to "gamelog", viewlog_url(match.games.first.id, "game") %>
+  <%= link_to "client_A.log", viewlog_url(match.games.first.id, "client_A") %>
+  <%= link_to "client_B.log", viewlog_url(match.games.first.id, "client_B") %>
+  <%= link_to "client_C.log", viewlog_url(match.games.first.id, "client_C") %>
+  <%= link_to "client_D.log", viewlog_url(match.games.first.id, "client_D") %>
+  
+  
   </p>
 
 

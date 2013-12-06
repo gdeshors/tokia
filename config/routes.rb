@@ -4,6 +4,7 @@ SampleApp::Application.routes.draw do
   resources :sessions, only: [:new, :create, :destroy]
   resources :matches
   resources :games
+  match '/games/:id/:log', to: 'games#viewlog', via: 'get', as: :viewlog
   root  'static_pages#home'
   match '/contact', to: 'static_pages#contact', via: 'get'
   match '/rules',   to: 'static_pages#rules',   via: 'get'

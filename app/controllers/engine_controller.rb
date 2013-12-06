@@ -37,6 +37,16 @@ class EngineController < ApplicationController
               pm.destroy # supprimer le pending game
               gamelog = "/home/#{TokServer}/logs/game.log"
               @game.gamelog = get_file_as_string(gamelog)
+              @game.log_server = get_file_as_string("/home/#{TokServer}/logs/server.log")
+              @game.log_server += get_file_as_string("/home/#{TokServer}/server.err")
+              @game.log_a = get_file_as_string("/home/#{TokServer}/logs/client_A.log")
+              @game.log_a += get_file_as_string("/home/#{TokServer}/logs/client_A.err")
+              @game.log_b = get_file_as_string("/home/#{TokServer}/logs/client_B.log")
+              @game.log_b += get_file_as_string("/home/#{TokServer}/logs/client_B.err")
+              @game.log_c = get_file_as_string("/home/#{TokServer}/logs/client_C.log")
+              @game.log_c += get_file_as_string("/home/#{TokServer}/logs/client_C.err")
+              @game.log_d = get_file_as_string("/home/#{TokServer}/logs/client_D.log")
+              @game.log_d += get_file_as_string("/home/#{TokServer}/logs/client_D.err")
               winner = find_victorious_team(gamelog)
               if winner == "A"
                 @game.winner = @game.ai_1
@@ -59,7 +69,7 @@ class EngineController < ApplicationController
                 end
                 match.save
               end
-              @message = "Ok un match a été enregistré ! team winner = " + winner.to_s
+              @message = "Ok un match a été enregistré ! team winner = " + @game.winner.name
             end
           else 
             @message = "Le statut de sortie du process était " + $?.exitstatus.to_s

@@ -5,6 +5,19 @@ class GamesController < ApplicationController
     @game = Game.find(params[:id])
   end
 
+  def viewlog
+    @game = Game.find(params[:id])
+    case params[:log]
+      when 'server' ; render text: @game.log_server, content_type: "text/plain"
+      when 'game' ; render text: @game.gamelog, content_type: "text/plain"
+      when 'client_A' ; render text: @game.log_a, content_type: "text/plain"
+      when 'client_B' ; render text: @game.log_b, content_type: "text/plain"
+      when 'client_C' ; render text: @game.log_c, content_type: "text/plain"
+      when 'client_D' ; render text: @game.log_d, content_type: "text/plain"
+      else render status: 404
+    end
+  end
+
   def edit
     @game = Game.find(params[:id])
   end
