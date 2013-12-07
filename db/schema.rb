@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131129232055) do
+ActiveRecord::Schema.define(version: 20131207233054) do
 
   create_table "ais", force: true do |t|
     t.string   "name"
@@ -40,6 +40,7 @@ ActiveRecord::Schema.define(version: 20131129232055) do
     t.datetime "updated_at"
   end
 
+  add_index "games", ["created_at"], name: "index_games_on_created_at"
   add_index "games", ["match_id"], name: "index_games_on_match_id"
   add_index "games", ["winner_id"], name: "index_games_on_winner_id"
 
@@ -55,6 +56,7 @@ ActiveRecord::Schema.define(version: 20131129232055) do
 
   add_index "matches", ["ai_1_id"], name: "index_matches_on_ai_1_id"
   add_index "matches", ["ai_2_id"], name: "index_matches_on_ai_2_id"
+  add_index "matches", ["created_at"], name: "index_matches_on_created_at"
   add_index "matches", ["winner_id"], name: "index_matches_on_winner_id"
 
   create_table "pending_games", force: true do |t|
