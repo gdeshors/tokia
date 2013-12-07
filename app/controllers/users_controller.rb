@@ -14,10 +14,6 @@ class UsersController < ApplicationController
 
   end
 
-  def test
-    render json: {a: "coucou"}
-  end
-
   def new
     @user = User.new
   end
@@ -25,6 +21,7 @@ class UsersController < ApplicationController
   def show
     @user = User.find(params[:id])
     @ai = @user.ais.first
+    @matches = Match.where("ai_1_id = ? OR ai_2_id = ?", @ai.id, @ai.id).order(:id).reverse_order.page(params[:page])
   end
 
   def create

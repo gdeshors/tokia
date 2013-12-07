@@ -9,4 +9,5 @@ class Match < ActiveRecord::Base
   validates :ai_1, presence: true
   validates :ai_2, presence: true
   
+  self.per_page = 10
 end

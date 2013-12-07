@@ -6,7 +6,7 @@ class Ai < ActiveRecord::Base
   has_many :matches_2, :class_name => 'Match', :foreign_key => 'ai_2'
 
   def matches
-      Match.where("ai_1_id = ? OR ai_2_id = ?", id, id)
+      Match.where("ai_1_id = ? OR ai_2_id = ?", id, id).order(:id)
   end
 
   def expected_outcome(elo2)
@@ -14,11 +14,7 @@ class Ai < ActiveRecord::Base
   end
 
   def calculate_new_elo(victory, elo2)
-    score = if victory
-      1
-    else
-      0
-    end
+    score = victory ? 1 : 0
     (self.elo + 30*(score - expected_outcome(elo2))).round
   end
 

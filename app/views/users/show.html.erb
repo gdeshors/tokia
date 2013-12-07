@@ -17,12 +17,12 @@
 
   <p>Liste des parties du joueur :</p>
   <li>
-
+  <%= will_paginate @matches %>
   <ul class="matches">
     <% if @ai != nil %>
-    <%= render @ai.matches %>
+    <%= render @matches %>
     <% end %>
   </ul>
-
+  <%= will_paginate @matches %>
   </li>
 </div>
