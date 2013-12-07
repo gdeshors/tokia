@@ -1,15 +1,24 @@
 <li>
   <p>
-  <%= game.ai_1.name %> contre <%= game.ai_2.name %>
+  <span class="<% if game.ai_1==game.winner %>winner<% end %> <% if game.ai_1.user==current_user %>self<% end %>"><%= game.ai_1.name %> (A et C)</span> 
+  contre 
+  <span class="<% if game.ai_2==game.winner %>winner<% end %> <% if game.ai_2.user==current_user %>self<% end %>"><%= game.ai_2.name %> (B et D)</span> 
   </p>
   <%= game.created_at %> 
   <p>
-  <% if @ai == game.winner %>
-  Victoire !
-  <% end %>
   <%= link_to "Replay", game %>
-  <%= link_to "server.log", game %>
+  <%= link_to "server.log", viewlog_url(game.id, "server") %>
+  <%= link_to "gamelog", viewlog_url(game.id, "game") %>
+  <% if game.ai_1.user == current_user %>
+  <%= link_to "client_A.log", viewlog_url(game.id, "client_A") %>
+  <%= link_to "client_C.log", viewlog_url(game.id, "client_C") %>
+  <% end %>
+  <% if game.ai_2.user == current_user %>
+  <%= link_to "client_B.log", viewlog_url(game.id, "client_B") %>
+  <%= link_to "client_D.log", viewlog_url(game.id, "client_D") %>
+  <% end %>
+  
+  
   </p>
-
 
 </li>

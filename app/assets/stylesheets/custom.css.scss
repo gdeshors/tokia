@@ -189,6 +189,16 @@ input {
   }
 }
 
+.winner {
+  font-weight: bold;
+}
+
+.self:before {
+  // color: #272;
+  content: url('http://archive.scientistswithoutborders.org/modules/modzzz/answers/templates/base/images/icons/profile_icon.gif');
+  padding-right: 5px;
+}
+
 /* Code coloration */
 
 .code {

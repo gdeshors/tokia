@@ -1,19 +1,22 @@
 <li>
   <p>
-  <%= match.ai_1.name %> contre <%= match.ai_2.name %>
+  <span class="<% if match.ai_1==match.winner %>winner<% end %> <% if match.ai_1.user==current_user %>self<% end %>"><%= match.ai_1.name %></span>
+  contre 
+  <span class="<% if match.ai_2==match.winner %>winner<% end %> <% if match.ai_2.user==current_user %>self<% end %>"><%= match.ai_2.name %></span>
   </p>
   <%= match.created_at %> 
   <p>
-  <% if @ai == match.winner %>
-  Victoire !
-  <% end %>
   <%= link_to "Replay", match.games.first %>
   <%= link_to "server.log", viewlog_url(match.games.first.id, "server") %>
   <%= link_to "gamelog", viewlog_url(match.games.first.id, "game") %>
+  <% if match.ai_1.user == current_user %>
   <%= link_to "client_A.log", viewlog_url(match.games.first.id, "client_A") %>
-  <%= link_to "client_B.log", viewlog_url(match.games.first.id, "client_B") %>
   <%= link_to "client_C.log", viewlog_url(match.games.first.id, "client_C") %>
+  <% end %>
+  <% if match.ai_2.user == current_user %>
+  <%= link_to "client_B.log", viewlog_url(match.games.first.id, "client_B") %>
   <%= link_to "client_D.log", viewlog_url(match.games.first.id, "client_D") %>
+  <% end %>
   
   
   </p>
