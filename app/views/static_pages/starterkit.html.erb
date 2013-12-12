@@ -26,9 +26,9 @@ Par ailleurs il nécessite log4j.
 <p>Le fichier server.properties contient la ligne de commande à exécuter pour chacun des 4 clients A, B, C, D. Il faut respecter la syntaxe suivante:</p>
 <code>
 draw_board=true # pour indiquer si on veut voir défiler dans la console un dessin ascii art du plateau<br>
-A=java -cp lib/* net.deshors.tok.client.StarterKitClient<br>
+A=java -cp lib/* net.deshors.tok.client.randommover.StarterKitClient<br>
 B=python monsupaireclient.py<br>
-C=java -cp lib/* net.deshors.tok.client.StarterKitClient<br>
+C=java -cp lib/* net.deshors.tok.client.randommover.StarterKitClient<br>
 D=python monsupaireclient.py
 </code>
 <p>Le port http qui doit être le premier paramètre du client sera ajouté automatiquement par le serveur. En passant, on voit ici comment lancer le client
