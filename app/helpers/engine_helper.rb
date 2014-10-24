@@ -1,5 +1,10 @@
 module EngineHelper
 
+
+  # Prend un log de partie (gamelog) 
+  # et retourne une chaîne comprenant toutes les cartes séparées par des espaces ;
+  # les paquets sont séparés par des retours chariot.
+  # Le dernier paquet n'est pas forcément complet (la partie peut s'arreter en cours).
   def extract_cards_from_log(log)
     mode_nouvellemain = false
     mode_j = 0

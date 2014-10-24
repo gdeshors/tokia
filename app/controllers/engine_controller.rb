@@ -119,34 +119,61 @@ class EngineController < ApplicationController
 
   def start_new_game
 
-     # choisir les deux IA à lancer (au hasard)
-    activeAis = Ai.where(active:true)
-    diff = 0
-    ais = activeAis.sample(2)
-    ais = activeAis.sample(2) until (ais[0].elo - ais[1].elo).abs < (diff += 100)
+    
+    pg = PendingGame.first
+    if pg == nil
 
-    if  PendingGame.first == nil
+      # choisir les deux IA à lancer (au hasard)
+      activeAis = Ai.where(active:true)
+      diff = 0
+      ais = activeAis.sample(2) # utile sinon plantage...
+      ais = activeAis.sample(2) until (ais[0].elo - ais[1].elo).abs < (diff += 100)
+
+      # créer un match
       m = Match.new
       m.ai_1 = ais[0]
       m.ai_2 = ais[1]
       m.save
+      # créer deux games avec les joueurs inversés
       g = Game.new
       g.ai_1 = m.ai_1
       g.ai_2 = m.ai_2
-      g.match= m
+      g.match = m
       g.save
       pg = PendingGame.new
       pg.game = g
       pg.save
+      g2 = Game.new
+      g2.ai_1 = m.ai_2
+      g2.ai_2 = m.ai_1
+      g2.match = m
+      g2.save
+      pg2 = PendingGame.new
+      pg2.game = g2
+      pg2.save
     end
+    g = pg.game
+
+    # est-ce que c'est une deuxième partie ?
+    lastGame = Game.where("winner_id is not null").last
+    cartesFixees = false
+    if g.match == lastGame.match
+      cartesFixees = true
+      open("/home/#{TokServer}/cartes", "w") do |f|
+        f.puts extract_cards_from_log(lastGame.gamelog)
+      end
+    end
+
      # écrire le fichier properties de lancement
     open("/home/#{TokServer}/server.properties", "w") do |f|
       f.puts "sudo_prefix=sudo su #{TokClient} -c" 
       f.puts "chdir=/home/#{TokServer}"
-      f.puts "A=#{ais[0].command_line}"
-      f.puts "B=#{ais[1].command_line}"
-      f.puts "C=#{ais[0].command_line}"
-      f.puts "D=#{ais[1].command_line}"
+      f.puts "A=#{g.ai_1.command_line}"
+      f.puts "B=#{g.ai_2.command_line}"
+      f.puts "C=#{g.ai_1.command_line}"
+      f.puts "D=#{g.ai_2.command_line}"
+      #si c'est une deuxième partie :
+      f.puts "cartes=/home/#{TokServer}/cartes" if cartesFixees
     end
     # write command
     java = "java -cp server/*:env/scala_2.10.3/* net.deshors.tok.server.Server server.properties"
