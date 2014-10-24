@@ -5,6 +5,7 @@ include Process
 class EngineController < ApplicationController
 
   TokServer = "tokserver"
+  TokClient = "tokclient"
   
   PidFile = "server.pid"
 
@@ -75,6 +76,10 @@ class EngineController < ApplicationController
             @message = "Le statut de sortie du process était " + $?.exitstatus.to_s
           end
           File.delete(pidFile)
+
+          # s'assurer qu'il n'existe plus de process : pkill -u tokclient, pkill -u tokserver
+          system("pkill -u #{TokServer}")
+          system("pkill -u #{TokClient}")
         end
       rescue Errno::ECHILD
         @message = "il n'existait pas de PID " + pid.to_s + " - le fichier pid a été supprimé"
@@ -135,9 +140,9 @@ class EngineController < ApplicationController
       pg.save
     end
      # écrire le fichier properties de lancement
-    open("/home/tokserver/server.properties", "w") do |f|
-      f.puts "sudo_prefix=sudo su tokclient -c" 
-      f.puts "chdir=/home/tokserver"
+    open("/home/#{TokServer}/server.properties", "w") do |f|
+      f.puts "sudo_prefix=sudo su #{TokClient} -c" 
+      f.puts "chdir=/home/#{TokServer}"
       f.puts "A=#{ais[0].command_line}"
       f.puts "B=#{ais[1].command_line}"
       f.puts "C=#{ais[0].command_line}"
@@ -145,9 +150,9 @@ class EngineController < ApplicationController
     end
     # write command
     java = "java -cp server/*:env/scala_2.10.3/* net.deshors.tok.server.Server server.properties"
-    command = "sudo su tokserver -c '#{java}'"
-    pid = Process.spawn(command, :chdir=>'/home/tokserver', :out=>"/home/tokserver/server.out", :err=>"/home/tokserver/server.err")
-    open('/home/tokserver/server.pid', 'w') { |f|
+    command = "sudo su #{TokServer} -c '#{java}'"
+    pid = Process.spawn(command, :chdir=>"/home/#{TokServer}", :out=>"/home/#{TokServer}/server.out", :err=>"/home/#{TokServer}/server.err")
+    open("/home/#{TokServer}/server.pid", 'w') { |f|
       f.puts pid
     }
     return pid
