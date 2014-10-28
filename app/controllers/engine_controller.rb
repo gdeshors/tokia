@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 include Process
+include EngineHelper
 
 class EngineController < ApplicationController
 
