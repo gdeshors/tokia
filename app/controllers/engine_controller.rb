@@ -114,6 +114,27 @@ class EngineController < ApplicationController
     return data
   end
 
+  def live
+    #:line : numéro de ligne après lequel on cherche
+    gamelog = "/home/#{TokServer}/logs/game.log"
+    render text: get_file_as_string_linemin(gamelog, params[:line].to_i), content_type: "text/plain"
+  end
+
+  def get_file_as_string_linemin(filename, lineMin)
+    data = ''
+    i = 0 
+    File.open(filename, "r") do |f| 
+      f.each_line do |line|
+        if (i >= lineMin)
+          #data += i.to_s + " " + line
+          data += line
+        end
+        i+=1
+      end
+    end
+    return data
+  end
+
   def find_victorious_team(filename)
     File.open(filename, "r") do |f| 
       f.each_line do |line|

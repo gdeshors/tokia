@@ -34,6 +34,10 @@ class GamesController < ApplicationController
     end
   end
 
+  def live
+    @game = Game.find(params[:id])
+    render 'live'
+  end
 
   private
 

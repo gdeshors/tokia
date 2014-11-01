@@ -1,0 +1,69 @@
+<% provide(:title, 'Tok Replay') %>
+
+
+<%= render @game %>
+
+
+<span id='courante'></span>/<span id='total'></span>  
+
+<input id="log" type="hidden" value=""></input>
+
+<div id="move"></div>
+
+<div id="board"></div>
+  
+  
+<script>
+
+
+  $(function() {
+    console.log( 'ready!' );
+
+    log;
+    $.ajax({
+      //url: "game",
+      url: "../../../engine/live/0",
+      dataType: "text",
+      cache: false,
+      success: function(data) {
+        log = new Log(data);
+        plateau = new Board(log);
+        plateau.init();
+        console.log("ok");
+       
+        plateau.gotoLast();
+
+        (function 
+          update() {
+          // aller chercher les logs à la ligne max+1
+          //get engine/live/log.numLigne+1
+          // mettre à jour le log
+          console.log(log.numLigne+1);
+          $.ajax({
+            url: "../../../engine/live/" + log.numLigne+1,
+            dataType: "text",
+            cache: false,
+            success: function(data) {
+
+              log.update(data);
+              console.log("success")
+              console.log(data)
+              plateau.next();
+              setTimeout(update, 1000);
+            }
+
+          });
+        })();
+
+
+      }
+    });
+
+    
+  });
+
+  
+</script>
+
+
+

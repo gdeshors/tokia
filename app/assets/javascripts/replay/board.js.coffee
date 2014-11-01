@@ -237,3 +237,7 @@ class @Board
     else
       if _index < @lcourante
         @prev() for i in [_index..@lcourante-1]
+
+  gotoLast: ->
+    #alert "play n° " + _index
+    @next() for i in [@lcourante..@log.actions.length-1]
