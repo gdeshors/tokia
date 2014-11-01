@@ -61,17 +61,28 @@ class EngineController < ApplicationController
               # gérer en plus le match
               if PendingGame.first == nil
                 match = @game.match
-                match.winner = @game.winner # FIXME c'est pas si simple si +ieurs
+                if match.games[0].winner == match.games[1].winner
+                  match.winner = @game.winner 
+                end
                  # gérer les elo
                 if match.winner != nil
                   match.new_elo_1 = match.ai_1.calculate_new_elo(match.ai_1==match.winner, match.ai_2.elo)
                   match.new_elo_2 = match.ai_2.calculate_new_elo(match.ai_2==match.winner, match.ai_1.elo)
                   match.ai_1.update_attributes(:elo => match.new_elo_1)
                   match.ai_2.update_attributes(:elo => match.new_elo_2)
+                else
+                  match.new_elo_1 = match.ai_1.elo
+                  match.new_elo_2 = match.ai_2.elo
+                  match.ai_1.update_attributes(:elo => match.new_elo_1)
+                  match.ai_2.update_attributes(:elo => match.new_elo_2)
                 end
                 match.save
               end
-              @message = "Ok un match a été enregistré ! team winner = " + @game.winner.name
+              if @game.winner == nil
+                @message = "Ok un match a été enregistré, pas de vainqueur"
+              else
+                @message = "Ok un match a été enregistré ! team winner = " + @game.winner.name
+              end
             end
           else 
             @message = "Le statut de sortie du process était " + $?.exitstatus.to_s
@@ -92,7 +103,6 @@ class EngineController < ApplicationController
       @message = "Aucun match n'était en route. Un match a été lancé (pid = " + pid.to_s + ")"
     end
   end
-
 
   def get_file_as_string(filename)
     data = ''

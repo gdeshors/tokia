@@ -3,8 +3,9 @@
   <span class="<% if game.ai_1==game.winner %>winner<% end %> <% if game.ai_1.user==current_user %>self<% end %>"><%= game.ai_1.name %> (A et C)</span> 
   contre 
   <span class="<% if game.ai_2==game.winner %>winner<% end %> <% if game.ai_2.user==current_user %>self<% end %>"><%= game.ai_2.name %> (B et D)</span> 
+  |
+  <%= game.updated_at %> 
   </p>
-  <%= game.created_at %> 
   <p>
   <%= link_to "Replay", game %>
   <%= link_to "server.log", viewlog_url(game.id, "server") %>
