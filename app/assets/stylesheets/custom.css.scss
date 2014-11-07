@@ -1,5 +1,10 @@
 @import "bootstrap";
 
+
+label {
+  display:inline;
+}
+
 /* mixins, variables, etc. */
 
 $grayMediumLight: #eaeaea;

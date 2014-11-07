@@ -1,10 +1,24 @@
-<% provide(:title, 'Tok Replay') %>
+<% provide(:title, 'Tok Live') %>
 
 
 <%= render @game %>
 
+<p>
+<label for="chkPause">Pause</label>
+<input type="checkbox" value="Pause" id="chkPause"  onchange="fpause()"/> 
+<label for="radioCpCp">Coup par coup</label>
+<input type="radio" value="CpCp" id="radioCpCp" name="radioAvancement" onchange="coupParCoup = true" checked="true"></input>
+<label for="radioVreelle">Vitesse réelle</label>
+<input type="radio" value="Vreelle" id="radioVreelle" name="radioAvancement" onchange="coupParCoup = false"></input>
+</p>
 
+<p>
+
+<input type="button" value="Prev" id="btnPrev"  onclick="plateau.prev();"/> 
 <span id='courante'></span>/<span id='total'></span>  
+<input type="button" value="Next" id="btnNext"  onclick="plateau.next();"/> 
+<input type="button" onclick="plateau.gotoLast();" value="Rattraper le live"/>
+</p>
 
 <input id="log" type="hidden" value=""></input>
 
@@ -14,6 +28,53 @@
   
   
 <script>
+  
+  var pause = false;
+  var coupParCoup = true;
+
+
+  function leftArrowPressed() {
+    plateau.prev();
+  }
+
+  function rightArrowPressed() {
+    plateau.next();
+  }
+  function upArrowPressed() {
+    for(var i=0; i<10; i++) {
+      plateau.prev();
+    }
+  }
+  function downArrowPressed() {
+    for(var i=0; i<10; i++) {
+      plateau.next();
+    }
+  }
+
+  
+  document.onkeydown = function(evt) {
+    evt = evt || window.event; /* There are four evt.keyCodes: 37 --> left; 38 --> up; 39 --> right;  40 --> down. */
+    switch (evt.keyCode) {
+      case 37:
+      leftArrowPressed();
+      break;
+      case 39:
+      rightArrowPressed();
+      break;
+      case 38:
+      upArrowPressed();
+      break;
+      case 40:
+      downArrowPressed();
+      break;
+    }
+  };
+
+  fpause = function () {
+    pause = !pause;
+    $("#btnPause").attr("value", pause? "Reprendre": "Pause");
+    console.log("pause : " + pause);
+  };
 
 
   $(function() {
@@ -54,8 +115,13 @@
                 nbLignes = data.split("\n").length- 1
               }
               i = i + nbLignes
-              //plateau.next();
-              plateau.gotoLast();
+              if (!pause) {
+                if (coupParCoup) {
+                  plateau.next();
+                } else {
+                  plateau.gotoLast();
+                }
+              }
               setTimeout(update, 1500);
 
 
