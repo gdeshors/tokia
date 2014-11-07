@@ -122,7 +122,7 @@ class EngineController < ApplicationController
 
   def get_file_as_string_linemin(filename, lineMin)
     data = ''
-    i = 0 
+    i = 1
     File.open(filename, "r") do |f| 
       f.each_line do |line|
         if (i >= lineMin)

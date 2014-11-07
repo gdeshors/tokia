@@ -9,14 +9,15 @@ class @Log
     @valsTermine = {A: 0, B: 0, C:0, D:0}
     @dataTermine.push({n:@numLigne, A: @vals.A, B: @vals.B, C: @vals.C, D: @vals.D})
     @actions = [-1] # -1 pour gérer le cas particulier du premier coup
-    this.lines = ""
+    this.lines = []
     this.update(_log)
 
   update: (_log) ->
     if _log == ""
       return
-    this.lines = _log.split("\n")
-    for line in this.lines
+    newlines = _log.split("\n")
+    this.lines = this.lines.concat(newlines)
+    for line in newlines
       do (line) =>
         args = line.split(" ")
         if (args[1] is "SORT") then @vals[args[2]]++

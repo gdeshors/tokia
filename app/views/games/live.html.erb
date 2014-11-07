@@ -30,26 +30,36 @@
         plateau = new Board(log);
         plateau.init();
         console.log("ok");
-       
         plateau.gotoLast();
+        nbLignes = 1;
+        if (data != "") {
+          nbLignes = data.split("\n").length - 1
+        }
+        var i = nbLignes;
 
         (function 
           update() {
-          // aller chercher les logs à la ligne max+1
-          //get engine/live/log.numLigne+1
+          // aller chercher les logs à la ligne max
           // mettre à jour le log
-          console.log(log.numLigne+1);
+          var url = "../../../engine/live/" + (i);
           $.ajax({
-            url: "../../../engine/live/" + log.numLigne+1,
+            url: url,
             dataType: "text",
             cache: false,
             success: function(data) {
-
+              console.log("success " + url);
               log.update(data);
-              console.log("success")
-              console.log(data)
-              plateau.next();
-              setTimeout(update, 1000);
+              nbLignes = 0;
+              if (data != "") {
+                nbLignes = data.split("\n").length- 1
+              }
+              i = i + nbLignes
+              //plateau.next();
+              plateau.gotoLast();
+              setTimeout(update, 1500);
+
+
+
             }
 
           });
