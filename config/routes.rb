@@ -5,6 +5,7 @@ SampleApp::Application.routes.draw do
   resources :sessions, only: [:new, :create, :destroy]
   resources :matches
   resources :games
+  resources :ais
   match '/games/:id/live', to: 'games#live', via: 'get', as: :live
   match '/games/:id/:log', to: 'games#viewlog', via: 'get', as: :viewlog  
   root  'static_pages#home'

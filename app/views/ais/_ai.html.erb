@@ -1,0 +1,15 @@
+<div>
+  
+  
+  <h4>IA : <%= ai.name %></h4>
+  <p>
+    classement = 
+    <%= ai.elo %>
+    |
+    <%= link_to "liste des matches", ai %>
+    |
+    active : <%= ai.active %>
+    |
+    <%= link_to "éditer ses propriétés", [:edit, ai] %>
+  </p>
+</div>

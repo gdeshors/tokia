@@ -1,0 +1,28 @@
+<% provide(:title, @ai.name) %>
+<div class="row">
+  <div>
+    <section>
+      <h1>
+        <%= gravatar_for @user %>
+        <%= @user.name %>
+      </h1>
+    </section>
+
+    <section>
+      <h3>
+        Liste des matches de l'IA 
+        <%= @ai.name %>
+      </h3>
+    </section>
+</div>
+
+  
+
+
+  
+
+  <%= render @matches %>
+
+
+
+</div>

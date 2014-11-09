@@ -1,29 +1,18 @@
-class UsersController < ApplicationController
-  
-  before_action :signed_in_user, only: [:index, :edit, :update]
-  before_action :correct_user,   only: [:edit, :update]
-  before_action :admin_user,     only: [:edit, :update, :destroy]
+class AisController < ApplicationController
 
-  def index
-    @users = User.paginate(page: params[:page])
-    @ykeys = []
-    @labels = []
-    Ai.all.each do |ai|
-     @ykeys.push(ai.id.to_s) 
-     @labels.push(ai.name)
-    end
+  #before_action :signed_in_user, only: [:index, :edit, :update]
+  #before_action :correct_user,   only: [:edit, :update]
+  #before_action :admin_user,     only: [:edit, :update, :destroy]
 
-  end
+ 
 
   def new
     @user = User.new
   end
 
   def show
-    @user = User.find(params[:id])
-    @ais = @user.ais
-    #@game=@ais.first.matches.first.games.first
-    @ai = @user.ais.first
+    @ai = Ai.find(params[:id])
+    @user = @ai.user
     @matches = Match.where("ai_1_id = ? OR ai_2_id = ?", @ai.id, @ai.id).order(:id).reverse_order.page(params[:page])
   end
 
@@ -39,6 +28,7 @@ class UsersController < ApplicationController
   end
 
   def edit
+    @ai = Ai.find(params[:id])
   end
 
   def update
@@ -74,7 +64,7 @@ class UsersController < ApplicationController
     end
 
     def correct_user
-      @user = User.find(params[:id])
+      @user = Ai.find(params[:id]).user
       redirect_to(root_url) unless current_user?(@user)
     end
 

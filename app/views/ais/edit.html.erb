@@ -1,0 +1,27 @@
+<% provide(:title, "Modification d'une IA") %>
+<h1>Mettre à jour une IA</h1>
+
+<div class="row">
+  <div class="span6 offset3">
+    <%= form_for(@ai) do |f| %>
+      <%= render 'shared/error_messages' %>
+
+      <%= f.label :name, "Nom" %>
+      <%= f.text_field :name %>
+
+      <%= f.label :active %>
+      <%= f.text_field :active %>
+
+      <%= f.label :version %>
+      <%= f.text_field :version %>
+
+
+      <%= f.label :command_line, "Ligne de commande" %>
+      <%= f.text_field :command_line %>
+
+      <%= f.submit "Save changes", class: "btn btn-large btn-primary" %>
+    <% end %>
+
+
+  </div>
+</div>
