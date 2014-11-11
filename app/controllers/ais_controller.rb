@@ -1,3 +1,5 @@
+include AisHelper
+
 class AisController < ApplicationController
 
   #before_action :signed_in_user, only: [:index, :edit, :update]
@@ -33,18 +35,23 @@ class AisController < ApplicationController
 
   def update
     if @ai.update_attributes(ai_params)
-
       unless params[:ai][:data].blank?
         dir = "/home/tokserver/clients/#{@ai.id}"
         Dir.mkdir(dir) unless Dir.exists? dir
-        open("#{dir}/#{params[:ai][:data].original_filename}", "wb") do |f|
+        filename = "#{dir}/#{params[:ai][:data].original_filename}"
+        open(filename, "wb") do |f|
           f.write params[:ai][:data].read
         end
+        @ai.update_attributes(:filename => filename)
+        
       end
+
+      #flash[:success] = command_line_for(@ai)
+      @ai.update_attributes(:command_line => command_line_for(@ai))
 
 
       # Handle a successful update.
-      flash[:success] = "IA mise à jour"
+      flash[:success] = "IA mise à jour ! Ligne de commande de l'ia : '#{@ai.command_line}'"
       redirect_to @user
     else
       render 'edit'
@@ -61,7 +68,7 @@ class AisController < ApplicationController
 
     def ai_params
       params.require(:ai).permit(:name, :active, :version,
-                                   :command_line)
+                                   :language, :firstparam)
     end
 
     # Before filters

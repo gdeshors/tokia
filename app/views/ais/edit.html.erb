@@ -18,13 +18,26 @@
       <%= f.label :version %>
       <%= f.text_field :version %>
 
-      <%= f.label :command_line, "Ligne de commande" %>
-      <%= f.text_field :command_line %>
+      <p>
+        <%= f.label :data, "Mettre à jour le fichier" %>
+        <%= f.file_field :data %>
+        <br>
+        <i>
+          Mettre à jour le fichier provoque l'apparition d'un événement dans le graphique, 
+          libellé comme la version associée au moment de l'enregistrement.
+        </i>
+      </p>
 
       <p>
-        <%= f.label :data, "Uploader un fichier" %>
-        <%= f.file_field :data %>
+        <%= f.label :language, 'Langage' %>
+        <% [ 'java 1.6', 'scala 2.10.3', 'php 5'].each do |language| %>
+          <br><%= f.radio_button :language, language %>
+          <%= language.humanize %>
+        <% end %>
       </p>
+
+      <%= f.label :firstparam, "Premier paramètre (optionnel, exemple la classe Java à lancer)" %>
+      <%= f.text_field :firstparam %>
 
       <%= f.submit "Enregistrer", class: "btn btn-large btn-primary" %>
     <% end %>
