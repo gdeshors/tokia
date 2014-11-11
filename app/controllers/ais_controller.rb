@@ -30,7 +30,7 @@ class AisController < ApplicationController
   end
 
   def edit
-    #@ai = Ai.find(params[:id])
+    
   end
 
   def update
@@ -44,6 +44,12 @@ class AisController < ApplicationController
         end
         @ai.update_attributes(:filename => filename)
         
+        # créer un événement !
+        e = Event.new
+        e.ai = @ai
+        e.version = @ai.version
+        e.commentaire = params[:event_comment]
+        e.save
       end
 
       #flash[:success] = command_line_for(@ai)

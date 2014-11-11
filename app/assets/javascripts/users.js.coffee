@@ -11,10 +11,11 @@ $ ->
 
         Morris.Line({
           element: 'elograph',
-          data: data,
+          data: data.matches,
           ymin: 'auto',
           hideHover : true,
           xkey: 'date',
           ykeys: ykeys,
-          labels: labels
+          labels: labels,
+          events: data.events
         })
