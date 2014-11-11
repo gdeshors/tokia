@@ -20,7 +20,7 @@ class AisController < ApplicationController
     @user = User.new(user_params)
     if @user.save
       sign_in @user
-      flash[:success] = "IA mise à jour"
+      flash[:success] = "IA créée"
       redirect_to @user
     else
       render 'new'
@@ -33,6 +33,16 @@ class AisController < ApplicationController
 
   def update
     if @ai.update_attributes(ai_params)
+
+      unless params[:ai][:data].blank?
+        dir = "/home/tokserver/clients/#{@ai.id}"
+        Dir.mkdir(dir) unless Dir.exists? dir
+        open("#{dir}/#{params[:ai][:data].original_filename}", "wb") do |f|
+          f.write params[:ai][:data].read
+        end
+      end
+
+
       # Handle a successful update.
       flash[:success] = "IA mise à jour"
       redirect_to @user
