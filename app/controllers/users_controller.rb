@@ -22,9 +22,8 @@ class UsersController < ApplicationController
   def show
     @user = User.find(params[:id])
     @ais = @user.ais
-    #@game=@ais.first.matches.first.games.first
-    @ai = @user.ais.first
-    @matches = Match.where("ai_1_id = ? OR ai_2_id = ?", @ai.id, @ai.id).order(:id).reverse_order.page(params[:page])
+    #@ai = @user.ais.first
+    #@matches = Match.where("ai_1_id = ? OR ai_2_id = ?", @ai.id, @ai.id).order(:id).reverse_order.page(params[:page])
   end
 
   def create

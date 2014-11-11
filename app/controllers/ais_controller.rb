@@ -1,7 +1,7 @@
 class AisController < ApplicationController
 
   #before_action :signed_in_user, only: [:index, :edit, :update]
-  #before_action :correct_user,   only: [:edit, :update]
+  before_action :correct_user,   only: [:edit, :update]
   #before_action :admin_user,     only: [:edit, :update, :destroy]
 
  
@@ -20,7 +20,7 @@ class AisController < ApplicationController
     @user = User.new(user_params)
     if @user.save
       sign_in @user
-      flash[:success] = "Bienvenue dans Tok IA !"
+      flash[:success] = "IA mise à jour"
       redirect_to @user
     else
       render 'new'
@@ -28,13 +28,13 @@ class AisController < ApplicationController
   end
 
   def edit
-    @ai = Ai.find(params[:id])
+    #@ai = Ai.find(params[:id])
   end
 
   def update
-    if @user.update_attributes(user_params)
+    if @ai.update_attributes(ai_params)
       # Handle a successful update.
-      flash[:success] = "Profil mis à jour"
+      flash[:success] = "IA mise à jour"
       redirect_to @user
     else
       render 'edit'
@@ -49,9 +49,9 @@ class AisController < ApplicationController
 
   private
 
-    def user_params
-      params.require(:user).permit(:name, :email, :password,
-                                   :password_confirmation)
+    def ai_params
+      params.require(:ai).permit(:name, :active, :version,
+                                   :command_line)
     end
 
     # Before filters
@@ -64,7 +64,8 @@ class AisController < ApplicationController
     end
 
     def correct_user
-      @user = Ai.find(params[:id]).user
+      @ai = Ai.find(params[:id])
+      @user = @ai.user
       redirect_to(root_url) unless current_user?(@user)
     end
 
