@@ -10,7 +10,7 @@ class EloDataController < ApplicationController
     event_comments = []
     (Event.where(:created_at => (lastDate.to_date - 5)..(lastDate.to_date + 5))).each do |e|
       events.push(e.created_at)
-      event_comments.push(version: e.version, commentaire:e.commentaire )
+      event_comments.push(date: e.created_at.strftime("%d %b à %k:%M"), version: e.version, commentaire:e.commentaire, ai: e.ai.name)
     end
 
     fulldata = { 

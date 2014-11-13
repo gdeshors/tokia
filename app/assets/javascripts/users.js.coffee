@@ -19,3 +19,13 @@ $ ->
           labels: labels,
           events: data.events
         })
+
+        # remplir les événements
+        for e in data.event_comments
+          do (e) =>
+            str = "<p>Le " + e.date
+            str += " : l'IA '" + e.ai + "' a été mise à jour en version " + e.version
+            if e.commentaire != null
+              str += " avec le commentaire : " + e.commentaire
+            str += "</p>"
+            $("#event_comments").append(str)
