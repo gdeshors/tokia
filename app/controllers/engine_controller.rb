@@ -56,6 +56,7 @@ class EngineController < ApplicationController
               if winner == "B"
                 @game.winner = @game.ai_2
               end
+              @game.finished_at = DateTime.now
               @game.save
 
               # gérer en plus le match
@@ -186,10 +187,13 @@ class EngineController < ApplicationController
     end
     g = pg.game
 
+    # marquer le début de la partie
+    g.update_attributes(:started_at => DateTime.now)
+
     # est-ce que c'est une deuxième partie ?
     lastGame = Game.where("winner_id is not null").last
     cartesFixees = false
-    if g.match == lastGame.match
+    if lastGame != nil and g.match == lastGame.match
       cartesFixees = true
       open("/home/#{TokServer}/cartes", "w") do |f|
         f.puts extract_cards_from_log(lastGame.gamelog)
