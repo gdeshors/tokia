@@ -4,7 +4,15 @@
   contre 
   <span class="<% if game.ai_2==game.winner %>winner<% end %> <% if game.ai_2.user==current_user %>self<% end %>"><%= game.ai_2.name %> (B et D)</span> 
   |
-  <%= game.updated_at %> 
+  <% if game.started_at == nil %>
+    En attente...
+  <% else %>
+    <% if game.finished_at == nil %>
+      Partie en cours ! <%= link_to "Voir le live", live_url(game.id, "server") %>
+    <% else %>
+      Partie terminée à <%= game.finished_at %> 
+    <% end %>
+  <% end %>
   </p>
   <p>
   <%= link_to "Replay", game %>

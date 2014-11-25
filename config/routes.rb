@@ -1,6 +1,7 @@
 SampleApp::Application.routes.draw do
   get "engine/run"
-  match '/engine/live/:line', to: 'engine#live', via: 'get', as: :engine_live
+  match '/engine/log/:line', to: 'engine#log', via: 'get', as: :engine_log
+  match '/engine/live', to: 'engine#live', via: 'get', as: :engine_live
   resources :users
   resources :sessions, only: [:new, :create, :destroy]
   resources :matches

@@ -1,15 +1,18 @@
 <% provide(:title, 'Tok Live') %>
 
+<h3>Partie n°<%= @game.id %></h3>
 
 <%= render @game %>
+
+<div id="partieFinie"></div>
 
 <p>
 <label for="chkPause">Pause</label>
 <input type="checkbox" value="Pause" id="chkPause"  onchange="fpause()"/> 
 <label for="radioCpCp">Coup par coup</label>
-<input type="radio" value="CpCp" id="radioCpCp" name="radioAvancement" onchange="coupParCoup = true" checked="true"></input>
+<input type="radio" value="CpCp" id="radioCpCp" name="radioAvancement" onchange="coupParCoup = true"></input>
 <label for="radioVreelle">Vitesse réelle</label>
-<input type="radio" value="Vreelle" id="radioVreelle" name="radioAvancement" onchange="coupParCoup = false"></input>
+<input type="radio" value="Vreelle" id="radioVreelle" name="radioAvancement" onchange="coupParCoup = false" checked="true"></input>
 </p>
 
 <p>
@@ -30,7 +33,8 @@
 <script>
   
   var pause = false;
-  var coupParCoup = true;
+  var coupParCoup = false;
+  var stopUpdate = false;
 
 
   function leftArrowPressed() {
@@ -83,7 +87,7 @@
     log;
     $.ajax({
       //url: "game",
-      url: "../../../engine/live/0",
+      url: "../../../engine/log/0",
       dataType: "text",
       cache: false,
       success: function(data) {
@@ -102,7 +106,7 @@
           update() {
           // aller chercher les logs à la ligne max
           // mettre à jour le log
-          var url = "../../../engine/live/" + (i);
+          var url = "../../../engine/log/" + (i);
           $.ajax({
             url: url,
             dataType: "text",
@@ -122,21 +126,41 @@
                   plateau.gotoLast();
                 }
               }
-              setTimeout(update, 1500);
-
-
-
+              if (!stopUpdate) {
+                setTimeout(update, 1500);
+              }
             }
-
           });
         })();
+      }
+    });    
+  });
 
 
+  (function updateUrl() {
+    // aller chercher l'identifiant de la partie en cours
+    var url = "../../../engine/live";
+    $.ajax({
+      url: url,
+      dataType: "text",
+      cache: false,
+      success: function(data) {
+        console.log("success live " + url);
+        if (data == "") {
+          // écrire que le match est fini ; en attente de démarrage d'un nouveau
+          // et stopper l'update
+          console.log("La partie est finie");
+          stopUpdate = true;
+          $("#partieFinie").html("La partie est finie. En attente du démarrage automatique du prochain match...")
+        } else if (data != <%= @game.id %>) {
+          // c'est donc une nouvelle partie : go go go
+          console.log("go to partie #" + data);
+          window.location = "../" + data + "/live"
+        } // sinon rien : c'est la partie actuelle
+        setTimeout(updateUrl, 5000);
       }
     });
-
-    
-  });
+  })();
 
   
 </script>

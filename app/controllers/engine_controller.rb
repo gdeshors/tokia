@@ -116,6 +116,22 @@ class EngineController < ApplicationController
   end
 
   def live
+    # renvoyer le numéro du match en cours, ou rien sinon
+    
+    # trouver tous les matches non terminés ; terminer autoritairement tous sauf le dernier
+    games = Game.where("started_at is not null and finished_at is null").order(:id)
+    games[0..-2].each do |g|
+      g.update_attributes(:finished_at => g.started_at)
+    end
+    # y a-t-il une partie en cours ?
+    if games[-1] == nil 
+      render text: "", content_type: "text/plain"
+    else
+      render text: games[-1].id, content_type: "text/plain"
+    end
+  end
+
+  def log
     #:line : numéro de ligne après lequel on cherche
     gamelog = "/home/#{TokServer}/logs/game.log"
     render text: get_file_as_string_linemin(gamelog, params[:line].to_i), content_type: "text/plain"
