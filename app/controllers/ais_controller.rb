@@ -16,6 +16,7 @@ class AisController < ApplicationController
     @ai = Ai.find(params[:id])
     @user = @ai.user
     @matches = Match.where("ai_1_id = ? OR ai_2_id = ?", @ai.id, @ai.id).order(:id).reverse_order.page(params[:page])
+    #@users = User.paginate(page: params[:page])
   end
 
   def create
