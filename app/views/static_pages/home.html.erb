@@ -14,10 +14,16 @@
   labels = <%= raw @labels.to_json %>;
 </script>
 
-<p>Voici le graphe des scores ELO des IA en lice :</p>
+<h5>Graphe des scores ELO des IA :</h5>
 <div id="elograph"></div>
 
 <div id="event_comments">
+  <h5>Derniers événements :</h5>
+</div>
+
+<div>
+  <h5>Dernier Match (ou match en cours) :</h5>
+  <%= render @games %>
 </div>
 
 <p><%= link_to image_tag("rails.png", alt: "Rails"), 'http://rubyonrails.org/' %>

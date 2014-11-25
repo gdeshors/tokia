@@ -5,7 +5,7 @@
   <span class="<% if game.ai_2==game.winner %>winner<% end %> <% if game.ai_2.user==current_user %>self<% end %>"><%= game.ai_2.name %> (B et D)</span> 
   |
   <% if game.started_at == nil %>
-    En attente...
+    Partie en attente... <%= link_to "Voir le live", live_url(game.id, "server") %>
   <% else %>
     <% if game.finished_at == nil %>
       Partie en cours ! <%= link_to "Voir le live", live_url(game.id, "server") %>

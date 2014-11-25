@@ -8,6 +8,9 @@ class StaticPagesController < ApplicationController
      @labels.push(ai.name)
     end
 
+    # aller chercher les parties du dernier match
+    @games = Match.last
+
   end
 
   def rules
