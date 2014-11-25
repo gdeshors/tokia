@@ -13,18 +13,25 @@
 
 <div id="board"></div>
   
+<div id="buttonGameChart"><input type="button" value="Afficher les graphiques" onclick="gamechart();"/> </div>
 <div id="gamechart"></div>
 <div id="gamechart2"></div>
+
   
 <script>
   $(function() {
     console.log( 'ready!' );
     log = new Log($("#log").attr("value"));
-    new Gamechart(log, function (i) {plateau.gotoMove(i)});
+    
     plateau = new Board(log);
     plateau.init();
     console.log("ok");
   });
+
+  function gamechart() {
+    /*$("#buttonGameChart").style.display = "none";*/
+    new Gamechart(log, function (i) {plateau.gotoMove(i)});
+  }
 
   function leftArrowPressed() {
     plateau.prev();
