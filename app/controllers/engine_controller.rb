@@ -50,10 +50,14 @@ class EngineController < ApplicationController
               @game.log_d = get_file_as_string("/home/#{TokServer}/logs/client_D.log")
               @game.log_d += get_file_as_string("/home/#{TokServer}/logs/client_D.err")
               winner = find_victorious_team(gamelog)
-              if winner == "A"
+              identOK = verifierNomsIA("/home/#{TokServer}/logs/server.log",@game.ai_1.name.upcase, @game.ai_2.name.upcase)
+              if !identOK
+                @game.log_server += "***********************\nAJOUTE PAR LE SITE : non-correspondance du nom d'une IA avec son identification - annulation de la partie"
+              end
+              if identOK && winner == "A"
                 @game.winner = @game.ai_1
               end
-              if winner == "B"
+              if identOK && winner == "B"
                 @game.winner = @game.ai_2
               end
               @game.finished_at = DateTime.now
@@ -150,6 +154,28 @@ class EngineController < ApplicationController
       end
     end
     return data
+  end
+
+  def verifierNomsIA(filename, nomAC, nomBD)
+    aok,bok,cok,dok = false
+    File.open(filename, "r") do |f| 
+      f.each_line do |line|
+        if aok || line["A : IDENTIFICATION " + nomAC]
+          aok = true
+        end
+        if bok || line["B : IDENTIFICATION " + nomBD]
+          bok = true
+        end
+        if cok || line["C : IDENTIFICATION " + nomAC]
+          cok = true
+        end
+        if dok || line["D : IDENTIFICATION " + nomBD]
+          dok = true
+        end
+        return true if aok && bok && cok && dok
+      end
+    end
+    return false
   end
 
   def find_victorious_team(filename)
