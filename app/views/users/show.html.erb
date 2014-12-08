@@ -9,12 +9,16 @@
     </section>
 </div>
 
-  
+
+<% if @ais.size > 0 %>
 <h3>Liste des IA de cet utilisateur :</h3>
-
-
   <%= render @ais %>
+<% else %>
+  <p>Aucune IA pour le moment.</p>
+<% end %>
 
-
+<p>
+  <%= link_to "Créer une nouvelle IA", new_ai_path, class: "btn " %>
+</p>
 
 </div>

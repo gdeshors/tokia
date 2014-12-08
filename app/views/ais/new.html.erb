@@ -1,5 +1,5 @@
 <% provide(:title, "Modification d'une IA") %>
-<h1>Mettre à jour une IA</h1>
+<h1>Créer une IA</h1>
 
 <div class="row">
   <div class="span6 offset3">
@@ -9,6 +9,10 @@
 
       <%= f.label :name, "Nom" %>
       <%= f.text_field :name %>
+      <br>
+        <i>
+          Attention le nom a deux contraintes. D'abord, ça doit IMPERATIVEMENT être un jeu de mot débile avec "tok", et d'autre part il faut que le nom mis ici soit identique à celui renvoyé par le client au moment de l'identification (ça permet la vérification automatique des parties après coup).
+        </i>
 
       <p>
         <%= f.label :active, 'Active (joue des matches)' %>
@@ -18,20 +22,14 @@
       <%= f.label :version %>
       <%= f.text_field :version %>
 
-
-        <%= f.label :data, "Mettre à jour le fichier" %>
+      
+        <%= f.label :data, "Choisir un fichier" %>
         <%= f.file_field :data %>
-        <br>
-        <i>
-          Mettre à jour le fichier provoque l'apparition d'un événement dans le graphique, 
-          libellé comme la version associée au moment de l'enregistrement. Vous pouvez laisser
-          un commentaire (public) sur cet événement : 
-          <%= text_field_tag :event_comment %>
-        </i>
+       
 
       <p>
         <%= f.label :language, 'Langage' %>
-        <% [ 'java 1.6', 'scala 2.10.3', 'php 5'].each do |language| %>
+        <% [ 'java 1.6', 'scala 2.10.3', 'php 5', 'python 3.2'].each do |language| %>
           <br><%= f.radio_button :language, language %>
           <%= language.humanize %>
         <% end %>

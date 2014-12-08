@@ -7,24 +7,40 @@ class AisController < ApplicationController
   before_action :correct_user,   only: [:edit, :update]
   #before_action :admin_user,     only: [:edit, :update, :destroy]
 
- 
 
   def new
-    @user = User.new
+    @ai = Ai.new
   end
 
   def show
     @ai = Ai.find(params[:id])
     @user = @ai.user
     @matches = Match.where("ai_1_id = ? OR ai_2_id = ?", @ai.id, @ai.id).order(:id).reverse_order.page(params[:page])
-    #@users = User.paginate(page: params[:page])
   end
 
   def create
-    @user = User.new(user_params)
-    if @user.save
-      sign_in @user
+    @ai = Ai.new(ai_params)
+    @user = current_user
+    @ai.user = @user
+    @ai.elo = 1500
+    if @ai.save
       flash[:success] = "IA créée"
+      unless params[:ai][:data].blank?
+        dir = "/home/tokserver/clients/#{@ai.id}"
+        Dir.mkdir(dir) unless Dir.exists? dir
+        filename = "#{dir}/#{params[:ai][:data].original_filename}"
+        open(filename, "wb") do |f|
+          f.write params[:ai][:data].read
+        end
+        @ai.update_attributes(:filename => filename)
+        
+        # créer un événement !
+        e = Event.new
+        e.ai = @ai
+        e.version = @ai.version
+        e.commentaire = "Création"
+        e.save
+      end
       redirect_to @user
     else
       render 'new'
