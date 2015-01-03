@@ -11,7 +11,9 @@
             <li><%= link_to "Concurrents", users_path %></li>
             <li id="fat-menu" class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                Mon compte <b class="caret"></b>
+                Mon compte 
+                <% if admin? %>*<% end %>
+                <b class="caret"></b>
               </a>
               <ul class="dropdown-menu">
                 <li><%= link_to "Mes ia", current_user %></li>

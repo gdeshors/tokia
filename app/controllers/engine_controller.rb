@@ -52,7 +52,8 @@ class EngineController < ApplicationController
               winner = find_victorious_team(gamelog)
               identOK = verifierNomsIA("/home/#{TokServer}/logs/server.log",@game.ai_1.name.upcase, @game.ai_2.name.upcase)
               if !identOK
-                @game.log_server += "***********************\nAJOUTE PAR LE SITE : non-correspondance du nom d'une IA avec son identification - annulation de la partie"
+                @game.log_server += "***********************\n"
+                @game.log_server += "AJOUTE PAR LE SITE : non-correspondance du nom d'une IA avec son identification - annulation de la partie"
               end
               if identOK && winner == "A"
                 @game.winner = @game.ai_1

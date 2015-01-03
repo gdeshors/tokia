@@ -3,9 +3,9 @@ include AisHelper
 
 class AisController < ApplicationController
 
-  #before_action :signed_in_user, only: [:index, :edit, :update]
-  before_action :correct_user,   only: [:edit, :update]
-  #before_action :admin_user,     only: [:edit, :update, :destroy]
+  before_action :signed_in_user
+  before_action :correct_or_admin,   only: [:edit, :update, :destroy]
+  
 
 
   def new
@@ -104,13 +104,10 @@ class AisController < ApplicationController
       end
     end
 
-    def correct_user
+    def correct_or_admin
       @ai = Ai.find(params[:id])
       @user = @ai.user
-      redirect_to(root_url) unless current_user?(@user)
+      redirect_to(root_url) unless current_user?(@user) or current_user.admin?
     end
 
-    def admin_user
-      redirect_to(root_url) unless current_user.admin?
-    end
 end

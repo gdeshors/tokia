@@ -7,14 +7,36 @@ class GamesController < ApplicationController
 
   def viewlog
     @game = Game.find(params[:id])
+    @userAC = @game.ai_1.user
+    @userBD = @game.ai_2.user
     case params[:log]
       when 'server' ; render text: @game.log_server, content_type: "text/plain"
       when 'game' ; render text: @game.gamelog, content_type: "text/plain"
-      when 'client_A' ; render text: @game.log_a, content_type: "text/plain"
-      when 'client_B' ; render text: @game.log_b, content_type: "text/plain"
-      when 'client_C' ; render text: @game.log_c, content_type: "text/plain"
-      when 'client_D' ; render text: @game.log_d, content_type: "text/plain"
-      else render status: 404
+      when 'client_A' ; 
+        if current_user?(@userAC) or current_user.admin? 
+          render text: @game.log_a, content_type: "text/plain"
+        else
+          redirect_to @game
+        end
+      when 'client_B' ; 
+        if current_user?(@userBD) or current_user.admin? 
+          render text: @game.log_b, content_type: "text/plain"
+        else
+          redirect_to @game
+        end
+      when 'client_C' ; 
+        if current_user?(@userAC) or current_user.admin? 
+          render text: @game.log_c, content_type: "text/plain"
+        else
+          redirect_to @game
+        end
+      when 'client_D' ; 
+        if current_user?(@userBD) or current_user.admin? 
+          render text: @game.log_d, content_type: "text/plain"
+        else
+          redirect_to @game
+        end
+      else redirect_to @game
     end
   end
 
