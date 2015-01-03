@@ -1,6 +1,11 @@
 # encoding: utf-8
 class MatchesController < ApplicationController
 
+
+  def index
+    @matches = Match.all.reverse_order.page(params[:page])
+  end
+
   def show
     @match = Match.find(params[:id])
   end

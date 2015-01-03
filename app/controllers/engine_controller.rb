@@ -30,69 +30,69 @@ class EngineController < ApplicationController
           # lire et copier les fichiers de log
           # créer un nouveau match
           
-          if $?.exitstatus == 0
-            pm = PendingGame.first
-            if (pm == nil)
-              @message = "Aucun match n'était en attente !!"
-            else
-              @game = pm.game
-              pm.destroy # supprimer le pending game
-              gamelog = "/home/#{TokServer}/logs/game.log"
-              @game.gamelog = get_file_as_string(gamelog)
-              @game.log_server = get_file_as_string("/home/#{TokServer}/logs/server.log")
-              @game.log_server += get_file_as_string("/home/#{TokServer}/server.err")
-              @game.log_a = get_file_as_string("/home/#{TokServer}/logs/client_A.log")
-              @game.log_a += get_file_as_string("/home/#{TokServer}/logs/client_A.err")
-              @game.log_b = get_file_as_string("/home/#{TokServer}/logs/client_B.log")
-              @game.log_b += get_file_as_string("/home/#{TokServer}/logs/client_B.err")
-              @game.log_c = get_file_as_string("/home/#{TokServer}/logs/client_C.log")
-              @game.log_c += get_file_as_string("/home/#{TokServer}/logs/client_C.err")
-              @game.log_d = get_file_as_string("/home/#{TokServer}/logs/client_D.log")
-              @game.log_d += get_file_as_string("/home/#{TokServer}/logs/client_D.err")
-              winner = find_victorious_team(gamelog)
-              identOK = verifierNomsIA("/home/#{TokServer}/logs/server.log",@game.ai_1.name.upcase, @game.ai_2.name.upcase)
-              if !identOK
-                @game.log_server += "***********************\n"
-                @game.log_server += "AJOUTE PAR LE SITE : non-correspondance du nom d'une IA avec son identification - annulation de la partie"
-              end
-              if identOK && winner == "A"
-                @game.winner = @game.ai_1
-              end
-              if identOK && winner == "B"
-                @game.winner = @game.ai_2
-              end
-              @game.finished_at = DateTime.now
-              @game.save
-
-              # gérer en plus le match
-              if PendingGame.first == nil
-                match = @game.match
-                if match.games[0].winner == match.games[1].winner
-                  match.winner = @game.winner 
-                end
-                 # gérer les elo
-                if match.winner != nil
-                  match.new_elo_1 = match.ai_1.calculate_new_elo(match.ai_1==match.winner, match.ai_2.elo)
-                  match.new_elo_2 = match.ai_2.calculate_new_elo(match.ai_2==match.winner, match.ai_1.elo)
-                  match.ai_1.update_attributes(:elo => match.new_elo_1)
-                  match.ai_2.update_attributes(:elo => match.new_elo_2)
-                else
-                  match.new_elo_1 = match.ai_1.elo
-                  match.new_elo_2 = match.ai_2.elo
-                  match.ai_1.update_attributes(:elo => match.new_elo_1)
-                  match.ai_2.update_attributes(:elo => match.new_elo_2)
-                end
-                match.save
-              end
-              if @game.winner == nil
-                @message = "Ok un match a été enregistré, pas de vainqueur"
-              else
-                @message = "Ok un match a été enregistré ! team winner = " + @game.winner.name
-              end
-            end
-          else 
-            @message = "Le statut de sortie du process était " + $?.exitstatus.to_s
+          if $?.exitstatus != 0
+            @message = "Le statut de sortie du process était " + $?.exitstatus.to_s + " ; "
           end
+          pm = PendingGame.first
+          if (pm == nil)
+            @message += "Aucun match n'était en attente !!"
+          else
+            @game = pm.game
+            pm.destroy # supprimer le pending game
+            gamelog = "/home/#{TokServer}/logs/game.log"
+            @game.gamelog = get_file_as_string(gamelog)
+            @game.log_server = get_file_as_string("/home/#{TokServer}/logs/server.log")
+            @game.log_server += get_file_as_string("/home/#{TokServer}/server.err")
+            @game.log_a = get_file_as_string("/home/#{TokServer}/logs/client_A.log")
+            @game.log_a += get_file_as_string("/home/#{TokServer}/logs/client_A.err")
+            @game.log_b = get_file_as_string("/home/#{TokServer}/logs/client_B.log")
+            @game.log_b += get_file_as_string("/home/#{TokServer}/logs/client_B.err")
+            @game.log_c = get_file_as_string("/home/#{TokServer}/logs/client_C.log")
+            @game.log_c += get_file_as_string("/home/#{TokServer}/logs/client_C.err")
+            @game.log_d = get_file_as_string("/home/#{TokServer}/logs/client_D.log")
+            @game.log_d += get_file_as_string("/home/#{TokServer}/logs/client_D.err")
+            winner = find_victorious_team(gamelog)
+            identOK = verifierNomsIA("/home/#{TokServer}/logs/server.log",@game.ai_1.name.upcase, @game.ai_2.name.upcase)
+            if !identOK
+              @game.log_server += "***********************\n"
+              @game.log_server += "AJOUTE PAR LE SITE : non-correspondance du nom d'une IA avec son identification - annulation de la partie"
+            end
+            if identOK && winner == "A"
+              @game.winner = @game.ai_1
+            end
+            if identOK && winner == "B"
+              @game.winner = @game.ai_2
+            end
+            @game.finished_at = DateTime.now
+            @game.save
+
+            # gérer en plus le match
+            if PendingGame.first == nil
+              match = @game.match
+              if match.games[0].winner == match.games[1].winner
+                match.winner = @game.winner 
+              end
+               # gérer les elo
+              if match.winner != nil
+                match.new_elo_1 = match.ai_1.calculate_new_elo(match.ai_1==match.winner, match.ai_2.elo)
+                match.new_elo_2 = match.ai_2.calculate_new_elo(match.ai_2==match.winner, match.ai_1.elo)
+                match.ai_1.update_attributes(:elo => match.new_elo_1)
+                match.ai_2.update_attributes(:elo => match.new_elo_2)
+              else
+                match.new_elo_1 = match.ai_1.elo
+                match.new_elo_2 = match.ai_2.elo
+                match.ai_1.update_attributes(:elo => match.new_elo_1)
+                match.ai_2.update_attributes(:elo => match.new_elo_2)
+              end
+              match.save
+            end
+            if @game.winner == nil
+              @message += "Ok un match a été enregistré, pas de vainqueur"
+            else
+              @message += "Ok un match a été enregistré ! team winner = " + @game.winner.name
+            end
+          end
+          
           File.delete(pidFile)
 
           # s'assurer qu'il n'existe plus de process : pkill -u tokclient, pkill -u tokserver
@@ -161,6 +161,7 @@ class EngineController < ApplicationController
     aok,bok,cok,dok = false
     File.open(filename, "r") do |f| 
       f.each_line do |line|
+        line = line.upcase
         if aok || line["A : IDENTIFICATION " + nomAC]
           aok = true
         end

@@ -50,6 +50,7 @@ comporte davantage de tours que la première, les ditributions suivantes sont al
 <P >Les résultats sont évalués à l'aide d'un classement ELO
 (utilisé pour les joueurs d'échecs par exemple).
 </P>
+<p>Règle importante : les IA doivent obligatoirement être nommées d'après un <strong>jeu de mot débile</strong> portant sur le mot "tok". Par ailleurs le nom retourné par la commande "identification" doit être identique au nom entré dans l'interface du site, afin de permettre la vérification ultérieure des parties par le site (et déviter l'attribution d'une victoire à la mauvaise IA).
 <h2 ><BR><BR>
 </h2>
 <h2 >2 Règles
@@ -974,12 +975,12 @@ Ce site, le serveur, les IA tournent sur une machine Raspberry Pi :
 Il s'agit d'un micro-serveur hébergé chez moi qui consomme très peu (4-5W). Il tourne sous Linux (Raspbian).
 Son architecture est ARMv6 32 bits, monocore, et sa puissance est <strong>très faible</strong>&nbsp;!
 Attention à garder cela en tête lors des tests de vos IA, car la limite de 10 secondes permettra peut-être 
-de faire 10 à 100 fois moins d'opérations sur le Raspberry que sur un poste classique.
+de faire 50 fois moins d'opérations sur le Raspberry que sur un poste classique.
 </p>
 
 <p>
 En ce qui concerne les programmes à exécuter, bien valider avec moi la disponibilité du langage et la version.
-Les exécutables sont attendus en un seul fichier exécutable, sans aucune dépendance (si ce n'est embarquée).
+Les exécutables sont attendus en un seul fichier exécutable. Si des dépendances sont nécessaires, elles doivent être invariables d'une version à l'autre - me contacter pour en discuter.
 </p>
 
 <p>
