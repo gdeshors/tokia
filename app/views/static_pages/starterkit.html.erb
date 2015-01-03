@@ -26,14 +26,35 @@ Par ailleurs il nécessite log4j.
 <p>Le fichier server.properties contient la ligne de commande à exécuter pour chacun des 4 clients A, B, C, D. Il faut respecter la syntaxe suivante:</p>
 <code>
 draw_board=true # pour indiquer si on veut voir défiler dans la console un dessin ascii art du plateau<br>
+cartes=fichierdecartes # optionnel : pour lancer une partie avec des cartes déterminées<br>
 A=java -cp lib/* net.deshors.tok.client.randommover.StarterKitClient<br>
 B=python monsupaireclient.py<br>
 C=java -cp lib/* net.deshors.tok.client.randommover.StarterKitClient<br>
 D=python monsupaireclient.py
 </code>
-<p>Le port http qui doit être le premier paramètre du client sera ajouté automatiquement par le serveur. En passant, on voit ici comment lancer le client
+<p>Le port http, qui doit être le premier paramètre du client, sera ajouté automatiquement par le serveur. En passant, on voit ici comment lancer le client
 random mover java, qui est intégré au serveur.</p>
-<p>Pour lancer le serveur, en supposant que l'ensemble de ces jar soient dans lib/, il faut exécuter : <code>java -cp lib/* net.deshors.tok.server.Server server.properties</code> </p>
+<p>Pour lancer le serveur, en supposant que l'ensemble de ces jar soient dans lib/, il faut exécuter (sous bash) : <code>java -cp lib/* net.deshors.tok.server.Server server.properties</code> </p>
+<p>Sous Windows c'est sans doute quelque chose comme ça, en spécifiant chaque jar à intégrer : <code>java -cp "lib\tok-server.jar;lib\log4j.jar\..." net.deshors.tok.server.Server server.properties</code> </p>
+
+<h3>Jeu avec des cartes prédéterminées</h3>
+<p>Si on met dans server.properties une ligne "cartes=fichierdecartes", il faut créer un fichier "fichierdecartes" qui contient autant de lignes que l'on souhaite mettre de paquets prédéterminés. Si la partie dure plus longtemps, des nouvelles cartes seront tirées aléatoirement. Chaque ligne contient toutes les cartes dans l'ordre souhaité, séparées par un espace. Il peut y avoir moins de 54 cartes sur les lignes, le restant sera tiré aléatoirement.</p>
+<p>Exemple de fichier de cartes :</p>
+<code>
+3 4 10 3 2 1 3 R 1 D 5 1 7 9 5 D V 9 6 R 10 V 7 7 2 8 3 V 8 5 R 7 10 R D 4 D 6 8 V 6 10 8 J 2 9 5 1 6 J 2 9 4 4 <br>
+
+R 2 R 7 10 8 5 7 R 1 6 1 8 8 J 3 2 9 4 9 9 4 3 10 7 D J V 1 D 3 6 5 3 D V 8 4 10 2 7 R D 2 9 10 V 1 4 5 6 V 5 6 <br>
+
+4 1 R R 5 6 9 4 D V 10 3 5 D 1 V 3 2 8 D 3 J V 5 10 4 1 2 1 7 J 6 D 2 7 R 10 9 2 9 R 8 6 9 7 V 10 4 8 3 7 6 5 8 <br>
+
+2 2 D 8 8 8 6 2 3 D 5 5 V 9 5 D 6 4 5 10 V J 7 V 6 6 7 4 1 4 2 4 10 3 R J 9 R 9 R 9 1 D 8 7 10 1 1 R 3 7 10 V 3 <br>
+
+1 4 4 7 8 9 R 2 8 2 6 3 1 3 D 5 7 J 6 1 6 9 4 10 5 V V 8 3 10 8 D 10 9 2 6 J 5 R 2 R 10 7 D R V V 7 5 4 1 3 9 D <br>
+
+7 5 2 10 4 V 2 9 V 7 3 R 2 2 9 R 7 R 10 3 
+</code>
+<p>Le fichier "cartes" produit par le serveur est compatible avec le format demandé en entrée.</p>
+
 <h2>Résultats</h2>
 <p>Le serveur écrit sur sa sortie standard l'avancement du plateau, si on a mis draw_board=true. Par ailleurs, il produit les fichiers suivants&nbsp;:
 <ul>
@@ -41,6 +62,7 @@ random mover java, qui est intégré au serveur.</p>
   <li>client_[A-D].log : tout ce que le client produit sur sa sortie standard, intercepté par le serveur</li>
   <li>client_[A-D].err : tout ce que le client produit sur sa sortie d'erreur</li>
   <li>game.log : le log de partie destiné à être interprété par le site et tok replay. La partie est complète quand on voit par exemple "A VICTOIRE" à la fin.</li>
+  <li>cartes : le fichier des cartes utilisées pour la partie, tirées aléatoirement ou fournies par un fichier (auquel cas le fichier de sortie peut être plus court si la partie a pris moins de distributions)
 </ul>
 </p>
 <h1>Random mover en Java</h1>
