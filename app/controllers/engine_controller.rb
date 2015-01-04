@@ -30,6 +30,7 @@ class EngineController < ApplicationController
           # lire et copier les fichiers de log
           # créer un nouveau match
           
+          @message = ""
           if $?.exitstatus != 0
             @message = "Le statut de sortie du process était " + $?.exitstatus.to_s + " ; "
           end

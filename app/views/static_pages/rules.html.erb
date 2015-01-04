@@ -19,9 +19,12 @@ pioche du joker</P>
 "Jette" doit maintenant indiquer les cartes jetées ; déplacement et échange ne prennent plus 
 un tiret mais un espace entre les cases ; MANGE indique la case du pion mangé ; CARTE devient POSE.
 </p>
-<p>1.5 (en cours) 26/11/13 : TERMINE et SORT indiquent le joueur possédant les pions concernés
+<p>1.5 26/11/13 : TERMINE et SORT indiquent le joueur possédant les pions concernés
 (pour éviter les ambiguités lorsqu'un joueur joue avec les pions de son partenaire)
 + petites corrections + passage du timeout à 10 secondes à cause de la lenteur du Raspberry</p>
+<p>1.6 (en vigueur) 04/01/15 : JOUEUR indique la deadline de réponse en temps système afin de s'affranchir des 
+	délais de transmission de la commande JOUEUR.
+	Les parties sont maintenant en duplicate. Les dépendances peuvent être envisagées.
 <P  ><BR>
 
 
@@ -122,7 +125,12 @@ immédiate.</P>
 <P >Lorsque c'est le tour d'un joueur de parler, il
 dispose d'un délai de réponse maximum. Une absence de réponse dans
 ce délai entraîne la défaite. Le délai pourra être réglable&nbsp;;
-la valeur en cours actuellement est de <strong>10 secondes</strong></P>
+la valeur en cours actuellement est de <strong>10 secondes</strong>.
+Depuis les spécifications version 1.6 (04/01/2015) la commande JOUEUR 
+prend un paramètre supplémentaire indiquant la deadline en temps système :
+nombre de millisecondes depuis EPOCH. Le serveur doit avoir reçu la 
+commande FIN du joueur avant cette deadline.
+</P>
 <P >Le concours n'impose aucune règle sur les langages
 de programmation à utiliser pour faire les clients et les
 participants sont invités à être inventifs et à profiter de
@@ -173,6 +181,7 @@ X?&nbsp;: zéro ou un X</P>
 (X | Y)&nbsp;: X ou Y (ou exclusif)</P>
 <P >
 1-5&nbsp;: 1 à 5</P>
+<p>&lt;xx&gt; : remplacer par la valeur de xx
 <P >
 </P>
 <P  ><B>Côté
@@ -202,7 +211,7 @@ FIN, </SPAN><I>Pioche</I><SPAN >, </SPAN><I>Tour</I><SPAN >+</SPAN></P>
 <P  >
 </P>
 <P  ><I>Joueur</I><SPAN >
-= JOUEUR (A-D)</SPAN></P>
+= JOUEUR (A-D) &lt;deadline_millisecondes_epoch&gt;</SPAN></P>
 <P  >
 </P>
 <P  ><I>Carte</I><SPAN >
