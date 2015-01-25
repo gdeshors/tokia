@@ -8,10 +8,12 @@ gem 'faker', '1.1.2'
 gem 'will_paginate', '3.0.4'
 gem 'bootstrap-will_paginate', '0.0.9'
 
+gem 'bigdecimal'
+gem 'therubyracer'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
 
-# gem 'thin'
+gem 'thin'
 
 group :development, :test do
   gem 'rspec-rails'
