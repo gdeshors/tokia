@@ -25,6 +25,10 @@ un tiret mais un espace entre les cases ; MANGE indique la case du pion mangé ;
 <p>1.6 (en vigueur) 04/01/15 : JOUEUR indique la deadline de réponse en temps système afin de s'affranchir des 
 	délais de transmission de la commande JOUEUR.
 	Les parties sont maintenant en duplicate. Les dépendances peuvent être envisagées.
+</p>
+<p>1.7 (en vigueur) 26/01/15 : JOUEUR <strong>n'indique plus</strong> la deadline de réponse en temps système ; on revient au protocole précédent.
+	Passage sur un vrai serveur prêté par Samuel, 8 coeurs et 8Gio de ram... Du coup on remet 5 secondes de temps de réponse !
+</p>
 <P  ><BR>
 
 
@@ -125,10 +129,8 @@ immédiate.</P>
 <P >Lorsque c'est le tour d'un joueur de parler, il
 dispose d'un délai de réponse maximum. Une absence de réponse dans
 ce délai entraîne la défaite. Le délai pourra être réglable&nbsp;;
-la valeur en cours actuellement est de <strong>10 secondes</strong>.
-Depuis les spécifications version 1.6 (04/01/2015) la commande JOUEUR 
-prend un paramètre supplémentaire indiquant la deadline en temps système :
-nombre de millisecondes depuis EPOCH. Le serveur doit avoir reçu la 
+la valeur en cours actuellement est de <strong>5 secondes</strong>.
+Le serveur doit avoir reçu la 
 commande FIN du joueur avant cette deadline.
 </P>
 <P >Le concours n'impose aucune règle sur les langages
@@ -211,7 +213,7 @@ FIN, </SPAN><I>Pioche</I><SPAN >, </SPAN><I>Tour</I><SPAN >+</SPAN></P>
 <P  >
 </P>
 <P  ><I>Joueur</I><SPAN >
-= JOUEUR (A-D) &lt;deadline_millisecondes_epoch&gt;</SPAN></P>
+= JOUEUR (A-D)</SPAN></P>
 <P  >
 </P>
 <P  ><I>Carte</I><SPAN >
@@ -314,7 +316,7 @@ Description_Joueur, Description_Joueur,  Description_Joueur</I></P>
 <P  ><BR>
 </P>
 <P  ><I>Echanges, cas
-concrets&nbsp;; le client a <B>dix secondes pour répondre - NB. cette durée sera ajustée en fonction de ce que ça permet sur le Raspberry -</B> quand
+concrets&nbsp;; le client a <B>cinq secondes pour répondre - NB. cette durée sera ajustée en fonction de ce que ça permet sur le Raspberry -</B> quand
 c'est son tour.</I></P>
 <P  ><BR>
 </P>
@@ -975,27 +977,10 @@ joueur C a un six et un roi.</P>
 <h2>6 Aspects techniques</h2>
 
 <p>
-Ce site, le serveur, les IA tournent sur une machine Raspberry Pi :
-
-<img src="http://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/RaspberryPi.jpg/640px-RaspberryPi.jpg" />
-</p>
-
-<p>
-Il s'agit d'un micro-serveur hébergé chez moi qui consomme très peu (4-5W). Il tourne sous Linux (Raspbian).
-Son architecture est ARMv6 32 bits, monocore, et sa puissance est <strong>très faible</strong>&nbsp;!
-Attention à garder cela en tête lors des tests de vos IA, car la limite de 10 secondes permettra peut-être 
-de faire 50 fois moins d'opérations sur le Raspberry que sur un poste classique.
+Ce site, le serveur, les IA tournent maintenant sur une machine dédiée 8 coeurs (intel Atom C2750) avec 8gio de ram.
 </p>
 
 <p>
 En ce qui concerne les programmes à exécuter, bien valider avec moi la disponibilité du langage et la version.
 Les exécutables sont attendus en un seul fichier exécutable. Si des dépendances sont nécessaires, elles doivent être invariables d'une version à l'autre - me contacter pour en discuter.
 </p>
-
-<p>
-La mémoire disponible est relativement limitée aussi : le Raspberry a 512 Mio, partagés entre les 4 ia, le 
-serveur, et aussi le site Ruby on Rails, plus quelques autres sites en PHP et un serveur NGINX. A vue de nez, 
-une IA ne devrait jamais dépasser 60 Mio de mémoire consommée (ce qui laisse quand même de la marge...)
-</p>
-
-
