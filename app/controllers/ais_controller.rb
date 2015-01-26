@@ -24,7 +24,6 @@ class AisController < ApplicationController
     @ai.user = @user
     @ai.elo = 1500
     if @ai.save
-      flash[:success] = "IA créée"
       unless params[:ai][:data].blank?
         dir = "/home/tokserver/clients/#{@ai.id}"
         Dir.mkdir(dir) unless Dir.exists? dir
@@ -41,6 +40,8 @@ class AisController < ApplicationController
         e.commentaire = "Création"
         e.save
       end
+      @ai.update_attributes(:command_line => command_line_for(@ai))
+      flash[:success] = "IA créée ! Ligne de commande de l'ia : '#{@ai.command_line}'"
       redirect_to @user
     else
       render 'new'
@@ -69,12 +70,7 @@ class AisController < ApplicationController
         e.commentaire = params[:event_comment]
         e.save
       end
-
-      #flash[:success] = command_line_for(@ai)
       @ai.update_attributes(:command_line => command_line_for(@ai))
-
-
-      # Handle a successful update.
       flash[:success] = "IA mise à jour ! Ligne de commande de l'ia : '#{@ai.command_line}'"
       redirect_to @user
     else
