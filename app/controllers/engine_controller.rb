@@ -97,8 +97,8 @@ class EngineController < ApplicationController
           File.delete(pidFile)
 
           # s'assurer qu'il n'existe plus de process : pkill -u tokclient, pkill -u tokserver
-          system("pkill -u #{TokServer}")
-          system("pkill -u #{TokClient}")
+          system("sudo pkill -u #{TokServer}")
+          system("sudo pkill -u #{TokClient}")
         end
       rescue Errno::ECHILD
         @message = "il n'existait pas de PID " + pid.to_s + " - le fichier pid a été supprimé"
