@@ -29,9 +29,8 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
-      sign_in @user
-      flash[:success] = "Bienvenue dans Tok IA !"
-      redirect_to @user
+      flash[:error] = 'Bienvenue dans Tok IA ! - Votre compte doit être validé manuellement, merci d\'écrire à g.deshors@laposte.net'
+      redirect_to(root_url)
     else
       render 'new'
     end
