@@ -29,7 +29,7 @@
 
       <p>
         <%= f.label :language, 'Langage' %>
-        <% [ 'java 1.6', 'scala 2.10.3', 'php 5', 'python 3.2'].each do |language| %>
+        <% [ 'java 1.6', 'scala 2.10.3', 'php 5', 'python 3.2', 'mono'].each do |language| %>
           <br><%= f.radio_button :language, language %>
           <%= language.humanize %>
         <% end %>
