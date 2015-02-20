@@ -14,6 +14,10 @@
     <% end %>
   <% end %>
   </p>
+  <% if game.ending != nil %>
+    <p>Fin de la partie : <%= game.ending %></p>
+  <% end %>
+  
   <p>
   <%= link_to "Replay", game %>
   <%= link_to "server.log", viewlog_url(game.id, "server") %>

@@ -55,6 +55,7 @@ class EngineController < ApplicationController
             @game.log_cartes = get_file_as_string("/home/#{TokServer}/logs/cartes.log")
             winner = find_victorious_team(gamelog)
             identOK = verifierNomsIA("/home/#{TokServer}/logs/server.log",@game.ai_1.name.upcase, @game.ai_2.name.upcase)
+            @game.ending = find_ending("/home/#{TokServer}/logs/server.log")
             if !identOK
               @game.log_server += "***********************\n"
               @game.log_server += "AJOUTE PAR LE SITE : non-correspondance du nom d'une IA avec son identification - annulation de la partie"
@@ -181,6 +182,20 @@ class EngineController < ApplicationController
     end
     return false
   end
+
+
+  def find_ending(filename)
+    File.open(filename, "r") do |f| 
+      f.each_line do |line|
+        i = line.index("INFO  - Fin : ")
+        if i
+          return line[i+14..-1]
+        end
+      end
+    end
+    return "raison inconnue"
+  end
+
 
   def find_victorious_team(filename)
     File.open(filename, "r") do |f| 
