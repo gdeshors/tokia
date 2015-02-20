@@ -12,6 +12,7 @@ class GamesController < ApplicationController
     case params[:log]
       when 'server' ; render text: @game.log_server, content_type: "text/plain"
       when 'game' ; render text: @game.gamelog, content_type: "text/plain"
+      when 'cartes' ; render text: @game.log_cartes, content_type: "text/plain"
       when 'client_A' ; 
         if current_user?(@userAC) or current_user.admin? 
           render text: @game.log_a, content_type: "text/plain"

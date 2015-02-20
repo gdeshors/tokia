@@ -18,6 +18,7 @@
   <%= link_to "Replay", game %>
   <%= link_to "server.log", viewlog_url(game.id, "server") %>
   <%= link_to "gamelog", viewlog_url(game.id, "game") %>
+  <%= link_to "cartes", viewlog_url(game.id, "cartes") %>
   <% if game.ai_1.user == current_user %>
   <%= link_to "client_A.log", viewlog_url(game.id, "client_A") %>
   <%= link_to "client_C.log", viewlog_url(game.id, "client_C") %>

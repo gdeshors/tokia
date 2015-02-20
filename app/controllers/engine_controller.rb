@@ -52,6 +52,7 @@ class EngineController < ApplicationController
             @game.log_c += get_file_as_string("/home/#{TokServer}/logs/client_C.err")
             @game.log_d = get_file_as_string("/home/#{TokServer}/logs/client_D.log")
             @game.log_d += get_file_as_string("/home/#{TokServer}/logs/client_D.err")
+            @game.log_cartes = get_file_as_string("/home/#{TokServer}/logs/cartes.log")
             winner = find_victorious_team(gamelog)
             identOK = verifierNomsIA("/home/#{TokServer}/logs/server.log",@game.ai_1.name.upcase, @game.ai_2.name.upcase)
             if !identOK
@@ -241,7 +242,7 @@ class EngineController < ApplicationController
     if lastGame != nil and g.match == lastGame.match
       cartesFixees = true
       open("/home/#{TokServer}/cartes", "w") do |f|
-        f.puts extract_cards_from_log(lastGame.gamelog)
+        f.puts lastGame.log_cartes
       end
     end
 

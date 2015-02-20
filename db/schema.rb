@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150206151746) do
+ActiveRecord::Schema.define(version: 20150220093002) do
 
   create_table "ais", force: true do |t|
     t.string   "name"
@@ -51,6 +51,8 @@ ActiveRecord::Schema.define(version: 20150206151746) do
     t.datetime "updated_at"
     t.datetime "started_at"
     t.datetime "finished_at"
+    t.string   "log_cartes"
+    t.string   "ending"
   end
 
   add_index "games", ["created_at"], name: "index_games_on_created_at"
